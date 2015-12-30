@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ruleset name="bairwell">
+    <description>Bairwell PHP Coding standards</description>
+    <!--
+       For more info check: https://github.com/squizlabs/PHP_CodeSniffer/wiki
+   -->
+    <file>src</file>
+    <file>tests</file>
+    <config name="colors" value="1"/>
+    <config name="show_progress" value="1"/>
+    <config name="default_standard" value="phpcs.xml"/>
+
+    <arg name="report" value="full"/>
+    <arg value="sp"/>
+    <rule ref="PSR1"/>
+    <rule ref="PSR2"/>
+    <rule ref="MySource">
+        <!-- fails with namespaces -->
+        <exclude name="MySource.Channels.IncludeSystem.NotIncludedExtends"/>
+        <!-- not everything wants a return -->
+        <exclude name="MySource.Commenting.FunctionComment.MissingReturn"/>
+        <!-- duplicated in squiz -->
+        <exclude name="MySource.Commenting.FunctionComment.MissingParamTag"/>
+        <exclude name="MySource.Commenting.FunctionComment.MissingParamName"/>
+        <exclude name="MySource.Commenting.FunctionComment.MissingParamComment"/>
+        <exclude name="MySource.Commenting.FunctionComment.EmptyThrows"/>
+        <exclude name="MySource.Commenting.FunctionComment.TypeHintMissing"/>
+        <exclude name="MySource.Commenting.FunctionComment.SpacingAfterParamName"/>
+        <exclude name="MySource.Commenting.FunctionComment.IncorrectParamVarName"/>
+        <exclude name="MySource.Commenting.FunctionComment.InvalidTypeHint"/>
+        <exclude name="MySource.Commenting.FunctionComment.SpacingAfterParamType"/>
+        <exclude name="MySource.Commenting.FunctionComment.ParamCommentFullStop"/>
+        <exclude name="MySource.Commenting.FunctionComment.Missing"/>
+        <exclude name="MySource.Commenting.FunctionComment.IncorrectTypeHint"/>
+        <exclude name="MySource.Commenting.FunctionComment.ThrowsNotCapital"/>
+        <exclude name="MySource.Commenting.FunctionComment.ParamNameNoMatch"/>
+        <exclude name="MySource.Commenting.FunctionComment.ExtraParamComment"/>
+        <exclude name="MySource.Commenting.FunctionComment.ThrowsNoFullStop"/>
+        <exclude name="MySource.Commenting.FunctionComment.InvalidNoReturn"/>
+        <exclude name="MySource.Commenting.FunctionComment.WrongStyle"/>
+        <exclude name="MySource.Commenting.FunctionComment.ParamCommentNotCapital"/>
+        <!-- sniff does not take namespaces into account -->
+        <exclude name="MySource.Channels.IncludeSystem.NotIncludedCall"/>
+    </rule>
+    <rule ref="Generic">
+        <!--- we want spaces not tabs -->
+        <exclude name="Generic.WhiteSpace.DisallowSpaceIndent.SpacesUsed"/>
+        <!-- we want to use the allman braces style -->
+        <exclude name="Generic.Functions.OpeningFunctionBraceKernighanRitchie.BraceOnNewLine"/>
+        <!-- constants should be upper cased -->
+        <exclude name="Generic.PHP.UpperCaseConstant.Found"/>
+        <!-- we want short arrays -->
+        <exclude name="Generic.Arrays.DisallowShortArraySyntax.Found"/>
+        <!-- sometimes functions are called with parameters they don't really use -->
+        <exclude name="Generic.CodeAnalysis.UnusedFunctionParameter.Found"/>
+        <!-- we want capitals -->
+        <exclude name="Generic.Files.LowercasedFilename.NotFound"/>
+        <!-- not PSR compliant -->
+        <exclude name="Generic.PHP.ClosingPHPTag.NotFound"/>
+        <exclude name="Generic.Files.EndFileNoNewline.Found"/>
+        <!-- conflicts with Generic.Formatting.SpaceAfterCast.NoSpace -->
+        <exclude name="Generic.Formatting.NoSpaceAfterCast.SpaceFound"/>
+        <!-- sometimes we have strings which split across lines -->
+        <exclude name="Generic.Strings.UnnecessaryStringConcat.Found"/>
+        <!-- conflicts with PSR2.Methods.FunctionCallSignature.Indent -->
+        <exclude name="Generic.WhiteSpace.ScopeIndent.Incorrect"/>
+    </rule>
+    <!-- ensure we are looking for Linux line endings -->
+    <rule ref="Generic.Files.LineEndings">
+        <properties>
+            <property name="eolChar" value="\n"/>
+        </properties>
+    </rule>
+    <!--
+   Boolean values should be specified by using the strings
+   "true" and "false" rather than the integers 0 and 1.
+-->
+    <rule ref="Generic.Formatting.MultipleStatementAlignment">
+        <properties>
+            <property name="maxPadding" value="8"/>
+            <property name="ignoreMultiLine" value="true"/>
+            <property name="error" value="true"/>
+        </properties>
+    </rule>
+    <rule ref="Generic.PHP.ForbiddenFunctions">
+        <properties>
+            <property name="forbiddenFunctions" type="array" value="delete=>unset,print=>echo,create_function=>null" />
+        </properties>
+    </rule>
+    <rule ref="Zend">
+        <exclude name="Zend.NamingConventions.ValidVariableName.PrivateNoUnderscore"/>
+    </rule>
+    <rule ref="PHPCS"/>
+    <rule ref="PEAR">
+        <exclude name="PEAR.Functions.FunctionCallSignature.Indent"/>
+        <exclude name="PEAR.Commenting.FileComment"/>
+        <exclude name="PEAR.Commenting.ClassComment"/>
+        <exclude name="PEAR.NamingConventions.ValidVariableName.PrivateNoUnderscore"/>
+        <!-- not PHP7 compliant -->
+        <exclude name="PEAR.Functions.FunctionDeclaration.NewlineBeforeOpenBrace"/>
+
+        <!-- always wants a return even on void -->
+        <exclude name="PEAR.Commenting.FunctionComment.MissingReturn"/>
+        <!-- duplicated in Squiz -->
+        <exclude name="PEAR.Commenting.FunctionComment.MissingParamTag"/>
+        <exclude name="PEAR.Commenting.FunctionComment.MissingParamName"/>
+        <exclude name="PEAR.Commenting.FunctionComment.MissingParamComment"/>
+        <exclude name="PEAR.Functions.FunctionDeclaration.Indent"/>
+        <exclude name="PEAR.Commenting.FunctionComment.SpacingAfterParamName"/>
+        <exclude name="PEAR.Commenting.FunctionComment.SpacingAfterParamType"/>
+        <exclude name="PEAR.Commenting.FunctionComment.Missing"/>
+        <exclude name="PEAR.Commenting.FunctionComment.ParamNameNoMatch"/>
+        <exclude name="PEAR.Commenting.FunctionComment.ExtraParamComment"/>
+        <exclude name="PEAR.Commenting.FunctionComment.WrongStyle"/>
+        <exclude name="PEAR.Commenting.InlineComment.WrongStyle"/>
+        <exclude name="PEAR.Functions.FunctionDeclaration.CloseBracketLine"/>
+        <!-- duplicated in PSR2 -->
+        <exclude name="PEAR.Functions.FunctionCallSignature.MultipleArguments"/>
+        <exclude name="PEAR.Functions.FunctionCallSignature.ContentAfterOpenBracket"/>
+        <exclude name="PEAR.Classes.ClassDeclaration.OpenBraceNewLine"/>
+        <!-- goes against PSR2 -->
+        <exclude name="PEAR.NamingConventions.ValidFunctionName.PrivateNoUnderscore"/>
+        <exclude name="PEAR.Functions.FunctionDeclaration.NoSpaceBeforeOpenBrace"/>
+        <exclude name="PEAR.WhiteSpace.ScopeIndent.Incorrect"/>
+        <!-- duplicated in Generic -->
+        <exclude name="PEAR.Functions.FunctionDeclaration.BraceOnSameLine"/>
+        <exclude name="PEAR.WhiteSpace.ScopeIndent.IncorrectExact"/>
+        <!-- goes against Squiz.Whitespace.OperatorSpacing.SpacingAfter -->
+        <exclude name="PEAR.Formatting.MultiLineAssignment.EqualSignLine"/>
+    </rule>
+    <rule ref="Squiz">
+        <!-- sometimes we want tags in class comments -->
+        <exclude name="Squiz.Commenting.ClassComment.TagNotAllowed"/>
+        <!-- disagree with "Comments may not appear after statements" -->
+        <exclude name="Squiz.Commenting.PostStatementComment.Found"/>
+        <!-- exclude as seems to be broken -->
+        <exclude name="Squiz.Arrays.ArrayDeclaration"/>
+        <!-- ignore -->
+        <exclude name="Squiz.Files.FileExtension.ClassFound"/>
+        <!-- <exclude name="Squiz.Commenting.FileComment"/>
+        <exclude name="Squiz.Commenting.ClassComment.TagNotAllowed"/> -->
+        <!-- we don't need @package -->
+        <exclude name="Squiz.Commenting.FileComment.MissingPackageTag"/>
+        <!-- we don't need @subpackage -->
+        <exclude name="Squiz.Commenting.FileComment.MissingSubpackageTag"/>
+        <!-- conflicts with Generic.Commenting.DocComment.SpacingAfter -->
+        <exclude name="Squiz.Commenting.FileComment.SpacingAfterComment"/>
+        <!-- not all functions need returns -->
+        <exclude name="Squiz.Commenting.FunctionComment.MissingReturn"/>
+        <!-- inline comments should be up to the developer -->
+        <exclude name="Squiz.Commenting.InlineComment.NotCapital"/>
+        <exclude name="Squiz.Commenting.InlineComment.InvalidEndChar"/>
+        <!-- conflicts with PSR2 PSR2.Namespaces.NamespaceDeclaration.BlankLineAfter -->
+        <exclude name="Squiz.WhiteSpace.FunctionSpacing.Before"/>
+        <!-- conflicts with Squiz.Commenting.ClassComment.SpacingBefore -->
+        <exclude name="Squiz.WhiteSpace.FunctionSpacing.After"/>
+        <exclude name="Squiz.WhiteSpace.ObjectOperatorSpacing.Before"/>
+        <exclude name="Squiz.Strings.ConcatenationSpacing.PaddingFound"/>
+        <!-- not PHP7 compliant -->
+        <exclude name="Squiz.Functions.MultiLineFunctionDeclaration.NewlineBeforeOpenBrace"/>
+        <!-- dupicated in generic -->
+        <exclude name="Squiz.PHP.ForbiddenFunctions.FoundWithAlternative"/>
+        <!-- has a problem with multiline methods with return parameters -->
+        <exclude name="Squiz.Functions.MultiLineFunctionDeclaration.NoSpaceBeforeOpenBrace"/>
+        <!-- needed for test overrides -->
+        <exclude name="Squiz.Functions.GlobalFunction.Found"/>
+        <!-- known to conflict with PSR2 -->
+        <exclude name="Squiz.ControlStructures.ElseIfDeclaration.NotAllowed"/>
+        <exclude name="Squiz.NamingConventions.ValidVariableName.PrivateNoUnderscore"/>
+        <exclude name="Squiz.NamingConventions.ValidFunctionName.PrivateNoUnderscore"/>
+        <exclude name="Squiz.WhiteSpace.MemberVarSpacing.Incorrect"/>
+        <exclude name="Squiz.ControlStructures.SwitchDeclaration.BreakIndent"/>
+        <!-- wants 1 blank line before closing function, PSR wants 0 -->
+        <exclude name="Squiz.WhiteSpace.FunctionClosingBraceSpace.SpacingBeforeClose"/>
+        <!-- wants 2 before vars lines, PSR is 0 -->
+        <exclude name="Squiz.WhiteSpace.MemberVarSpacing.Incorrect"/>
+        <!-- duplicated in PSR2 -->
+        <exclude name="Squiz.Classes.ClassDeclaration.OpenBraceNewLine"/>
+        <!-- duplicated in generic as Generic.Functions.OpeningFunctionBraceBsdAllman.BraceOnSameLine -->
+        <exclude name="Squiz.Functions.MultiLineFunctionDeclaration.BraceOnSameLine"/>
+        <!-- can be a pain with type hinting -->
+        <exclude name="Squiz.Commenting.BlockComment.SingleLine"/>
+        <exclude name="Squiz.PHP.CommentedOutCode.Found"/>
+    </rule>
+
+</ruleset>
