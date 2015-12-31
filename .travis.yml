@@ -17,9 +17,9 @@ install:
   - composer require --dev satooshi/php-coveralls -n
 
 script:
-  mkdir -p build/logs
-  phpunit --coverage-clover build/logs/clover.xml
-  vendor/bin/phpcs
+  - mkdir -p build/logs
+  - phpunit --coverage-clover build/logs/clover.xml
+  - vendor/bin/phpcs
 
 after_success:
   - travis_retry php vendor/bin/coveralls -v
