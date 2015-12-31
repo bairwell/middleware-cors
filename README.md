@@ -26,6 +26,50 @@ This is a PHP 7 [Composer](https://getcomposer.org/) compatible library for prov
 * Blocks invalid settings.
 * Minimal third party requirements (just the definition files "psr/http-message" and "psr/log" for main, and PHPUnit, PHPCodeSniffer, SlimFramework and Monolog for development/testing).
 
+# Usage
+
+You can utilise this CORs library as simply as:
+
+```php
+$slim=new \Slim\App(); // use Slim3 as it supports PSR7 middleware
+$slim->add(new Cors()); // add CORs
+// add routes
+$slim->run(); // get Slim running
+```
+
+but that won't really add much (as it allows all hosts origin and methods by default).
+
+You can make it slightly more complex such as:
+
+```php
+$slim=new \Slim\App(); // use Slim3 as it supports PSR7 middleware
+$config=[
+    'origin'=>'*.example.com' // allow all hosts ending example.com
+];
+$slim->add(new Cors($config)); // add CORs
+// add routes
+$slim->run(); // get Slim running
+```
+
+or
+
+```php
+$slim=new \Slim\App(); // use Slim3 as it supports PSR7 middleware
+$config=[
+    'origin'=>['*.example.com','*.example.com.test','example.com','dev.*',
+    'allowCredentials'=>true
+];
+$slim->add(new Cors($config)); // add CORs
+// add routes
+$slim->run(); // get Slim running
+```
+
+which will allow all Origins ending .example.com or *.example.com.test, the exact example.com origin or
+any host starting with dev. It'll also allow credentials to be allowed.
+
+For a more complicated integration which relies on the Slim router to feed back which methods are actually
+allowed per route, see ``tests/Cors/FunctionalTests/SlimTest.php``
+
 ## Standards
 
 The following [PHP FIG](http://www.php-fig.org/psr/) standards should be followed:

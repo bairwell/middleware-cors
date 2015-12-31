@@ -11,15 +11,18 @@ matrix:
   allow_failures:
     - php: nightly
 
+cache:
+    directories:
+        - $HOME/.composer/cache
 
 install:
-  - composer install -n
+  - mkdir -p build/logs
+  - travis_retry composer update ${COMPOSER_FLAGS} --no-interaction
   - composer require --dev satooshi/php-coveralls -n
 
 script:
-  - mkdir -p build/logs
-  - phpunit --coverage-clover build/logs/clover.xml
+  - vendor/bin/phpunit --coverage-clover build/logs/clover.xml
   - vendor/bin/phpcs
 
 after_success:
-  - travis_retry php vendor/bin/coveralls -v
+  - travis_retry vendor/bin/coveralls -v
