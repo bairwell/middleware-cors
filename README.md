@@ -1,12 +1,19 @@
 # Bairwell\Cors
 
+[![Latest Stable Version](https://poser.pugx.org/bairwell/cors/v/stable)](https://packagist.org/packages/bairwell/cors)
+[![License](https://poser.pugx.org/bairwell/cors/license)](https://packagist.org/packages/bairwell/cors)
+[![SensioLabsInsight](https://insight.sensiolabs.com/projects/8aea9987-e478-4faa-a3fe-728e9423b4e7/mini.png)](https://insight.sensiolabs.com/projects/8aea9987-e478-4faa-a3fe-728e9423b4e7)
+[![Coverage Status](https://coveralls.io/repos/bairwell/cors/badge.svg?branch=master&service=github)](https://coveralls.io/github/bairwell/cors?branch=master)
+[![Build Status](https://travis-ci.org/bairwell/cors.svg?branch=master)](https://travis-ci.org/bairwell/cors)
+[![Total Downloads](https://poser.pugx.org/bairwell/cors/downloads)](https://packagist.org/packages/bairwell/cors)
+
 This is a PHP 7 [Composer](https://getcomposer.org/) compatible library for providing a [PSR-7]((http://www.php-fig.org/psr/psr-7/) compatible middleware layer for handling
 "[CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/Access_control_CORS)" (Cross Origin Request Security/Cross-Origin Http Request/HTTP access control) headers and security.
 
-## What does this library provides over other CORs librarys?
+## What does this library provides over other CORs libraries?
 
 * PHP-7 type declarations.
-* Works as a piece of [PSR-7]((http://www.php-fig.org/psr/psr-7/) middleware making it compatible with many frameworks (such as [Slim 3](http://slimframework.com) and [Symfony](http://symfony.com/blog/psr-7-support-in-symfony-is-here))
+* Works as a piece of [PSR-7](http://www.php-fig.org/psr/psr-7/) middleware making it compatible with many frameworks (such as [Slim 3](http://slimframework.com) and [Symfony](http://symfony.com/blog/psr-7-support-in-symfony-is-here))
 * Massively flexibility over configuration settings (most can be strings, arrays or callbacks).
 * Follows the [CORs flowchart](http://www.html5rocks.com/static/images/cors_server_flowchart.png) and actively rejects invalid requests.
 * Only sends the appropriate headers when necessary.
