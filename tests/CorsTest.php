@@ -20,9 +20,9 @@ use Bairwell\Cors\Exceptions\BadOrigin;
  * Tests the CORs middleware layer.
  *
  * @uses \Bairwell\Cors
- * @uses \Bairwell\Cors\Traits\Validate
+ * @uses \Bairwell\Cors\ValidateSettings
  * @uses \Bairwell\Cors\Traits\Parse
- * @uses \Bairwell\Cors\Traits\Preflight
+ * @uses \Bairwell\Cors\Preflight
  * @uses \Bairwell\Cors\Exceptions\ExceptionAbstract
  */
 class CorsTest extends \PHPUnit_Framework_TestCase

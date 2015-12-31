@@ -15,11 +15,9 @@ use Bairwell\Cors;
  *
  * Tests the CORs middleware layer.
  *
- * @uses \Bairwell\Cors
- * @uses \Bairwell\Cors\Traits\Parse
- * @uses \Bairwell\Cors\Traits\Validate
+ * @uses \Bairwell\Cors\ValidateSettings
  */
-class ValidateTest extends \PHPUnit_Framework_TestCase
+class ValidateSettingsTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * The allowed settings.
@@ -47,21 +45,16 @@ class ValidateTest extends \PHPUnit_Framework_TestCase
      * Covers checking the validation settings.
      *
      * @test
-     * @covers \Bairwell\Cors::validateSetting
-     * @covers \Bairwell\Cors::validateSettingString
-     * @covers \Bairwell\Cors::validateSettingArray
-     * @covers \Bairwell\Cors::validateSettingCallable
-     * @covers \Bairwell\Cors::validateSettingInt
-     * @covers \Bairwell\Cors::validateSettingBool
+     * @covers \Bairwell\Cors\ValidateSettings::__invoke
+     * @covers \Bairwell\Cors\ValidateSettings::validateString
+     * @covers \Bairwell\Cors\ValidateSettings::validateArray
+     * @covers \Bairwell\Cors\ValidateSettings::validateCallable
+     * @covers \Bairwell\Cors\ValidateSettings::validateInt
+     * @covers \Bairwell\Cors\ValidateSettings::validateBool
      */
     public function testValidateSettings()
     {
-        $sut              = new Cors();
-        $reflection       = new \ReflectionClass(get_class($sut));
-        $settingsProperty = $reflection->getProperty('settings');
-        $settingsProperty->setAccessible(true);
-        $method = $reflection->getMethod('validateSetting');
-        $method->setAccessible(true);
+        $sut              = new Cors\ValidateSettings();
         // general tests
         $testData = [
             ['notOn' => 'string', 'value' => 'abc'],
@@ -79,7 +72,7 @@ class ValidateTest extends \PHPUnit_Framework_TestCase
         foreach ($this->allowedSettings as $k => $allowed) {
             foreach ($testData as $data) {
                 try {
-                    $method->invokeArgs($sut, [$k, $data['value'], $allowed]);
+                    $sut($k, $data['value'], $allowed);
                 } catch (\InvalidArgumentException $e) {
                     if (true === in_array($data['notOn'], $allowed)) {
                         $this->fail('Failed to test '.$k.' correctly: rejected when passing value:'.$e->getMessage());
@@ -93,28 +86,28 @@ class ValidateTest extends \PHPUnit_Framework_TestCase
 
         // specific tests
         try {
-            $method->invokeArgs($sut, ['test', [], ['array']]);
+            $sut('test', [], ['array']);
         } catch (\InvalidArgumentException $e) {
             $this->assertSame('Array for test is empty', $e->getMessage());
         }
 
         // non-stringed array (containing another array)
         try {
-            $method->invokeArgs($sut, ['test', ['abc', '123', []], ['array']]);
+            $sut('test', ['abc', '123', []], ['array']);
         } catch (\InvalidArgumentException $e) {
             $this->assertSame('Array for test contains a non-string item', $e->getMessage());
         }
 
         // non-stringed array (containing int)
         try {
-            $method->invokeArgs($sut, ['test', ['abc', 123], ['array']]);
+            $sut('test', ['abc', 123], ['array']);
         } catch (\InvalidArgumentException $e) {
             $this->assertSame('Array for test contains a non-string item', $e->getMessage());
         }
 
         // int is too low
         try {
-            $method->invokeArgs($sut, ['test', -1, ['int']]);
+            $sut('test', -1, ['int']);
         } catch (\InvalidArgumentException $e) {
             $this->assertSame('Int value for test is too low', $e->getMessage());
         }

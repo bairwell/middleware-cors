@@ -18,6 +18,8 @@ declare (strict_types = 1);
 
 namespace Bairwell;
 
+use Bairwell\Cors\ValidateSettings;
+use Bairwell\Cors\Preflight;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Bairwell\Cors\Exceptions\BadOrigin;
@@ -59,7 +61,7 @@ use Psr\Log\LoggerInterface;
 class Cors
 {
 
-    use Cors\Traits\Validate, Cors\Traits\Parse, Cors\Traits\Preflight;
+    use Cors\Traits\Parse;
 
     /**
      * The settings configuration.
@@ -83,6 +85,20 @@ class Cors
     ];
 
     /**
+     * Settings validator.
+     *
+     * @var ValidateSettings
+     */
+    protected $validateSettings;
+
+    /**
+     * Preflight system.
+     *
+     * @var Preflight
+     */
+    protected $preflight;
+
+    /**
      * The logger (if we have one set).
      *
      * @var LoggerInterface $logger
@@ -96,7 +112,9 @@ class Cors
      */
     public function __construct(array $settings = [])
     {
-        $this->settings = $this->getDefaults();
+        $this->validateSettings = new ValidateSettings();
+        $this->preflight        = new Preflight([$this,'addLog']);
+        $this->settings         = $this->getDefaults();
         $this->setSettings($settings);
     }//end __construct()
 
@@ -117,7 +135,7 @@ class Cors
      *
      * @return bool True if logged, false if no logger.
      */
-    protected function addLog(string $string) : bool
+    public function addLog(string $string) : bool
     {
         if (null !== $this->logger) {
             $this->logger->debug($string, ['cors']);
@@ -170,7 +188,7 @@ class Cors
         $this->settings = array_merge($this->settings, $settings);
         // loop through checking each setting
         foreach ($this->allowedSettings as $name => $allowed) {
-            $this->validateSetting($name, $this->settings[$name], $allowed);
+            $this->validateSettings->__invoke($name, $this->settings[$name], $allowed);
         }
 
         return $this;
@@ -245,7 +263,7 @@ class Cors
         // add all our appropriate headers.
         if ('OPTIONS' === strtoupper($request->getMethod())) {
             $this->addLog('Preflighting');
-            $return = $this->preflight($request, $response, $headers, $origin);
+            $return = $this->preflight->__invoke($this->settings, $request, $response, $headers, $origin);
             $this->addLog('Returning from preflight');
             return $return;
         }

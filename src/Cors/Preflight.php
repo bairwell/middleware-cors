@@ -1,6 +1,6 @@
 <?php
 /**
- * Trait Preflight.
+ * Preflight.
  *
  * All the CORs orientated preflight code.
  *
@@ -13,7 +13,7 @@
  */
 declare (strict_types = 1);
 
-namespace Bairwell\Cors\Traits;
+namespace Bairwell\Cors;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -23,11 +23,50 @@ use Bairwell\Cors\Exceptions\NoHeadersAllowed;
 use Bairwell\Cors\Exceptions\HeaderNotAllowed;
 
 /**
- * Trait Preflight.
+ * Preflight.
  * All the CORs orientated preflight code.
  */
-trait Preflight
+class Preflight
 {
+    use Traits\Parse;
+
+    /**
+     * The settings configuration.
+     *
+     * @var array
+     */
+    protected $settings;
+
+    /**
+     * Callable logger.
+     *
+     * @var callable
+     */
+    protected $logger;
+
+    /**
+     * Preflight constructor.
+     *
+     * @param callable $logger A callable logger system.
+     */
+    public function __construct(callable $logger)
+    {
+        $this->logger = $logger;
+    }//end __construct()
+
+
+    /**
+     * Add a log string if we have a logger.
+     *
+     * @param string $string String to log.
+     *
+     * @return bool True if logged, false if no logger.
+     */
+    final protected function addLog(string $string) : bool
+    {
+        $return = call_user_func($this->logger, $string);
+        return $return;
+    }//end addLog()
 
     /**
      * Handle the preflight requests for the access control headers.
@@ -52,7 +91,7 @@ trait Preflight
      * @throws MethodNotAllowed If the method provided by the user is not allowed.
      * @return ResponseInterface
      */
-    protected function preflightAccessControlAllowMethods(
+    final protected function accessControlAllowMethods(
         ServerRequestInterface $request,
         ResponseInterface $response,
         array &$headers
@@ -94,10 +133,11 @@ trait Preflight
 
         // return the response object
         return $response;
-    }//end preflightAccessControlAllowMethods()
+    }//end accessControlAllowMethods()
 
     /**
      * Handle the preflight requests for the access control headers.
+     *
      * Logic is:
      * - If there are headers configured, but they client hasn't said they are sending them, just
      *   add the list to the Access-Control-Allow-Headers header and return the response
@@ -124,7 +164,7 @@ trait Preflight
      * @throws HeaderNotAllowed If a particular header is not allowed.
      * @return ResponseInterface
      */
-    protected function preflightAccessControlRequestHeaders(
+    final protected function accessControlRequestHeaders(
         ServerRequestInterface $request,
         ResponseInterface $response,
         array &$headers
@@ -173,10 +213,11 @@ trait Preflight
 
         // return the response
         return $response;
-    }//end preflightAccessControlRequestHeaders()
+    }//end accessControlRequestHeaders()
 
     /**
      * Handle the preflight requests.
+     *
      * Logic is:
      * - Receive a list of previously set headers from calling method (which should
      *   include the Origin: and any credentials related headers)
@@ -194,6 +235,7 @@ trait Preflight
      * - If the origin is not "*", add a Vary: line to indicate the response may change if
      *   the origin is difference.
      *
+     * @param array                  $settings Our settings.
      * @param ServerRequestInterface $request  The server request information.
      * @param ResponseInterface      $response The response handler (should be filled in at end or on error).
      * @param array                  $headers  The headers we have already created.
@@ -201,18 +243,21 @@ trait Preflight
      *
      * @return ResponseInterface
      */
-    private function preflight(
+    public function __invoke(
+        array $settings,
         ServerRequestInterface $request,
         ResponseInterface $response,
         array $headers,
         string $origin
     ) : ResponseInterface
     {
+        $this->settings = $settings;
+
         // preflight the access control allow methods
-        $response = $this->preflightAccessControlAllowMethods($request, $response, $headers);
+        $response = $this->accessControlAllowMethods($request, $response, $headers);
 
         // preflight the access control request headers
-        $response = $this->preflightAccessControlRequestHeaders($request, $response, $headers);
+        $response = $this->accessControlRequestHeaders($request, $response, $headers);
 
         // set the Access-Control-Max-Age header. Uses maxAge configuration setting.
         $maxAge = $this->parseItem('maxAge', $request, true);
@@ -240,5 +285,5 @@ trait Preflight
 
         // return the response
         return $response;
-    }//end preflight()
-}
+    }//end __invoke()
+}//end class

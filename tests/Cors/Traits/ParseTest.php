@@ -19,7 +19,8 @@ use Monolog\Logger;
  *
  * @uses \Bairwell\Cors
  * @uses \Bairwell\Cors\Traits\Parse
- * @uses \Bairwell\Cors\Traits\Validate
+ * @uses \Bairwell\Cors\Preflight
+ * @uses \Bairwell\Cors\ValidateSettings
  */
 class ParseTest extends \PHPUnit_Framework_TestCase
 {

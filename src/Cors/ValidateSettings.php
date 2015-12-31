@@ -1,8 +1,8 @@
 <?php
 /**
- * Trait Validate.
+ * Validate.
  *
- * All the CORs orientated validation code.
+ * All the CORs orientated settings validation code.
  *
  * Part of the Bairwell\Cors package.
  *
@@ -13,14 +13,14 @@
  */
 declare (strict_types = 1);
 
-namespace Bairwell\Cors\Traits;
+namespace Bairwell\Cors;
 
 /**
- * Trait Validate.
+ * Validate settings.
  *
  * All the CORs orientated validation code.
  */
-trait Validate
+class ValidateSettings
 {
 
     /**
@@ -32,13 +32,13 @@ trait Validate
      *
      * @throws \InvalidArgumentException If the data is incorrect.
      */
-    protected function validateSetting(string $name, $value, array $allowed)
+    public function __invoke(string $name, $value, array $allowed)
     {
-        if ((true === $this->validateSettingString($name, $value, $allowed))
-            || (true === $this->validateSettingArray($name, $value, $allowed))
-            || (true === $this->validateSettingCallable($name, $value, $allowed))
-            || (true === $this->validateSettingInt($name, $value, $allowed))
-            || (true === $this->validateSettingBool($name, $value, $allowed))
+        if ((true === $this->validateString($value, $allowed))
+            || (true === $this->validateArray($name, $value, $allowed))
+            || (true === $this->validateCallable($value, $allowed))
+            || (true === $this->validateInt($name, $value, $allowed))
+            || (true === $this->validateBool($value, $allowed))
         ) {
             return;
         }
@@ -46,19 +46,18 @@ trait Validate
         throw new \InvalidArgumentException(
             'Unable to validate settings for '.$name.': allowed types: '.implode(', ', $allowed)
         );
-    }//end validateSetting()
+    }//end __invoke()
 
     /**
      * Validates an bool setting.
      *
-     * @param string $name    The name of the setting we are validating.
-     * @param mixed  $value   The value we are validating.
-     * @param array  $allowed Which items are allowed.
+     * @param mixed $value   The value we are validating.
+     * @param array $allowed Which items are allowed.
      *
      * @throws \InvalidArgumentException If the data is inaccurate/incorrect.
      * @return bool True if validated, false if not
      */
-    protected function validateSettingBool(string $name, $value, array $allowed) : bool
+    final protected function validateBool($value, array $allowed) : bool
     {
         if (true === in_array('bool', $allowed)) {
             if (true === is_bool($value)) {
@@ -67,19 +66,18 @@ trait Validate
         }
 
         return false;
-    }//end validateSettingBool()
+    }//end validateBool()
 
     /**
      * Validates an string setting.
      *
-     * @param string $name    The name of the setting we are validating.
-     * @param mixed  $value   The value we are validating.
-     * @param array  $allowed Which items are allowed.
+     * @param mixed $value   The value we are validating.
+     * @param array $allowed Which items are allowed.
      *
      * @throws \InvalidArgumentException If the data is inaccurate/incorrect.
      * @return bool True if validated, false if not
      */
-    protected function validateSettingString(string $name, $value, array $allowed) : bool
+    final protected function validateString($value, array $allowed) : bool
     {
         if (true === in_array('string', $allowed)) {
             if (true === is_string($value)) {
@@ -88,19 +86,18 @@ trait Validate
         }
 
         return false;
-    }//end validateSettingString()
+    }//end validateString()
 
     /**
      * Validates an callable setting.
      *
-     * @param string $name    The name of the setting we are validating.
-     * @param mixed  $value   The value we are validating.
-     * @param array  $allowed Which items are allowed.
+     * @param mixed $value   The value we are validating.
+     * @param array $allowed Which items are allowed.
      *
      * @throws \InvalidArgumentException If the data is inaccurate/incorrect.
      * @return bool True if validated, false if not
      */
-    protected function validateSettingCallable(string $name, $value, array $allowed) : bool
+    final protected function validateCallable($value, array $allowed) : bool
     {
         if (true === in_array('callable', $allowed)) {
             if (true === is_callable($value)) {
@@ -109,7 +106,7 @@ trait Validate
         }
 
         return false;
-    }//end validateSettingCallable()
+    }//end validateCallable()
 
     /**
      * Validates an int setting.
@@ -121,7 +118,7 @@ trait Validate
      * @throws \InvalidArgumentException If the data is inaccurate/incorrect.
      * @return bool True if validated, false if not
      */
-    protected function validateSettingInt(string $name, $value, array $allowed) : bool
+    final protected function validateInt(string $name, $value, array $allowed) : bool
     {
         if (true === in_array('int', $allowed)) {
             if (true === is_int($value)) {
@@ -134,7 +131,7 @@ trait Validate
         }
 
         return false;
-    }//end validateSettingInt()
+    }//end validateInt()
 
     /**
      * Validates an array setting.
@@ -146,7 +143,7 @@ trait Validate
      * @throws \InvalidArgumentException If the data is inaccurate/incorrect.
      * @return bool True if validated, false if not
      */
-    protected function validateSettingArray(string $name, $value, array $allowed) : bool
+    final protected function validateArray(string $name, $value, array $allowed) : bool
     {
         if (true === in_array('array', $allowed)) {
             if (true === is_array($value)) {
@@ -165,5 +162,5 @@ trait Validate
         }
 
         return false;
-    }//end validateSettingArray()
-}
+    }//end validateArray()
+}//end class
