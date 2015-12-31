@@ -1,0 +1,28 @@
+sudo: false
+
+language: php
+
+php:
+  - 7.0 # at the moment no HHVM as composer won't allow it to be set.
+  - nightly
+
+matrix:
+  fast_finish: true
+  allow_failures:
+    - php: nightly
+
+cache:
+    directories:
+        - $HOME/.composer/cache
+
+install:
+  - mkdir -p build/logs
+  - travis_retry composer update ${COMPOSER_FLAGS} --no-interaction
+  - composer require --dev satooshi/php-coveralls -n
+
+script:
+  - vendor/bin/phpunit --coverage-clover build/logs/clover.xml
+  - vendor/bin/phpcs
+
+after_success:
+  - travis_retry vendor/bin/coveralls -v
