@@ -2,7 +2,7 @@
     "name": "bairwell/cors",
     "description": "A PSR-7 middleware layer for providing CORS (Cross Origin Request Security) headers and security provisions. Instead of just allowing invalid CORs requests to come through, this middleware actively blocks them after validating.",
     "keywords": ["psr-7","middleware","cors"],
-    "homepage": "https://bitbucket.org/bairwell/cors",
+    "homepage": "https://github.com/bairwell/cors",
     "license": "MIT",
     "authors": [
         {
