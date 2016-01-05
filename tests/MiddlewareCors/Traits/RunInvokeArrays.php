@@ -1,14 +1,14 @@
 <?php
 /**
- * Class CorsTest validate.
+ * Class MiddlewareCorsTest validate.
  *
- * Tests the CORs middleware layer.
+ * Tests the MiddlewareCors middleware layer.
  */
 declare (strict_types = 1);
 
-namespace Bairwell\Cors\Traits;
+namespace Bairwell\MiddlewareCors\Traits;
 
-use Bairwell\Cors;
+use Bairwell\MiddlewareCors;
 use Psr\Log\LoggerInterface;
 use Monolog\Handler\TestHandler;
 use Monolog\Logger;
@@ -101,9 +101,9 @@ trait RunInvokeArrays
             throw new \Exception('Missing settings');
         }
 
-        $sut = new Cors($settings['configuration']);
+        $sut = new MiddlewareCors($settings['configuration']);
         // sanity check
-        $this->assertInstanceOf('Bairwell\Cors', $sut);
+        $this->assertInstanceOf('Bairwell\MiddlewareCors', $sut);
         $sutSettings = array_merge($this->defaults, $settings['configuration']);
         $this->arraysAreSimilar($sutSettings, $sut->getSettings(), 'Matching internal settings');
         // setup the logger

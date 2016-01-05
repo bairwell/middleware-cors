@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Cors.
+ * Class MiddlewareCors.
  *
  * A piece of PSR7 compliant middleware (in that it takes a PSR7 request and response
  * fields, a "next" field and handles them appropriate) which adds appropriate CORS
@@ -18,15 +18,15 @@ declare (strict_types = 1);
 
 namespace Bairwell;
 
-use Bairwell\Cors\ValidateSettings;
-use Bairwell\Cors\Preflight;
+use Bairwell\MiddlewareCors\ValidateSettings;
+use Bairwell\MiddlewareCors\Preflight;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Bairwell\Cors\Exceptions\BadOrigin;
+use Bairwell\MiddlewareCors\Exceptions\BadOrigin;
 use Psr\Log\LoggerInterface;
 
 /**
- * Class Cors.
+ * Class MiddlewareCors.
  *
  * A piece of PSR7 compliant middleware (in that it takes a PSR7 request and response
  * fields, a "next" field and handles them appropriate) which adds appropriate CORS
@@ -58,10 +58,10 @@ use Psr\Log\LoggerInterface;
  *     - Add Access-Control-Max-Age (optional)
  *     - Add Vary:Origin if Origin is not *
  */
-class Cors
+class MiddlewareCors
 {
 
-    use Cors\Traits\Parse;
+    use \Bairwell\MiddlewareCors\Traits\Parse;
 
     /**
      * The settings configuration.
@@ -106,7 +106,7 @@ class Cors
     protected $logger = null;
 
     /**
-     * Cors constructor.
+     * MiddlewareCors constructor.
      *
      * @param array $settings Our list of CORs related settings.
      */

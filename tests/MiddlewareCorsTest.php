@@ -2,7 +2,7 @@
 /**
  * Tests the main CORs system.
  * 
- * Part of the Bairwell\Cors package.
+ * Part of the Bairwell\MiddlewareCors package.
  *
  * (c) Richard Bairwell <richard@bairwell.com>
  *
@@ -13,34 +13,34 @@ declare (strict_types = 1);
 
 namespace Bairwell;
 
-use Bairwell\Cors\Exceptions\BadOrigin;
+use Bairwell\MiddlewareCors\Exceptions\BadOrigin;
 
 /**
  * Class CorsTest.
  * Tests the CORs middleware layer.
  *
- * @uses \Bairwell\Cors
- * @uses \Bairwell\Cors\ValidateSettings
- * @uses \Bairwell\Cors\Traits\Parse
- * @uses \Bairwell\Cors\Preflight
- * @uses \Bairwell\Cors\Exceptions\ExceptionAbstract
+ * @uses \Bairwell\MiddlewareCors
+ * @uses \Bairwell\MiddlewareCors\ValidateSettings
+ * @uses \Bairwell\MiddlewareCors\Traits\Parse
+ * @uses \Bairwell\MiddlewareCors\Preflight
+ * @uses \Bairwell\MiddlewareCors\Exceptions\ExceptionAbstract
  */
-class CorsTest extends \PHPUnit_Framework_TestCase
+class MiddlewareCorsTest extends \PHPUnit_Framework_TestCase
 {
-    use \Bairwell\Cors\Traits\RunInvokeArrays;
+    use \Bairwell\MiddlewareCors\Traits\RunInvokeArrays;
 
     /**
      * Checks the default settings.
      *
      * @test
-     * @covers \Bairwell\Cors::__construct
-     * @covers \Bairwell\Cors::getDefaults
-     * @covers \Bairwell\Cors::getSettings
-     * @covers \Bairwell\Cors::getAllowedSettings
+     * @covers \Bairwell\MiddlewareCors::__construct
+     * @covers \Bairwell\MiddlewareCors::getDefaults
+     * @covers \Bairwell\MiddlewareCors::getSettings
+     * @covers \Bairwell\MiddlewareCors::getAllowedSettings
      */
     public function testCheckDefaultSettings()
     {
-        $sut      = new Cors();
+        $sut      = new MiddlewareCors();
         $defaults = $sut->getDefaults();
         $this->arraysAreSimilar($this->defaults, $defaults);
         $settings = $sut->getSettings();
@@ -53,11 +53,11 @@ class CorsTest extends \PHPUnit_Framework_TestCase
      * Test the logger can be configured.
      *
      * @test
-     * @covers \Bairwell\Cors::addLog
-     * @covers \Bairwell\Cors::setLogger
+     * @covers \Bairwell\MiddlewareCors::addLog
+     * @covers \Bairwell\MiddlewareCors::setLogger
      */
     public function testLogger() {
-        $sut      = new Cors();
+        $sut      = new MiddlewareCors();
         $addLog=new \ReflectionMethod($sut,'addLog');
         $addLog->setAccessible(true);
         $this->assertFalse($addLog->invoke($sut,'Log entry'));
@@ -73,12 +73,12 @@ class CorsTest extends \PHPUnit_Framework_TestCase
      * Checks the settings can be changed via the constructor.
      *
      * @test
-     * @covers \Bairwell\Cors::__construct
-     * @covers \Bairwell\Cors::getSettings
+     * @covers \Bairwell\MiddlewareCors::__construct
+     * @covers \Bairwell\MiddlewareCors::getSettings
      */
     public function testCheckChangedSettingsViaConstructor()
     {
-        $sut                = new Cors(['origin' => 'test']);
+        $sut                = new MiddlewareCors(['origin' => 'test']);
         $expected           = $this->defaults;
         $expected['origin'] = 'test';
         $settings           = $sut->getSettings();
@@ -89,13 +89,13 @@ class CorsTest extends \PHPUnit_Framework_TestCase
      * Checks the settings can be changed via the setter.
      *
      * @test
-     * @covers \Bairwell\Cors::__construct
-     * @covers \Bairwell\Cors::getSettings
-     * @covers \Bairwell\Cors::setSettings
+     * @covers \Bairwell\MiddlewareCors::__construct
+     * @covers \Bairwell\MiddlewareCors::getSettings
+     * @covers \Bairwell\MiddlewareCors::setSettings
      */
     public function testCheckChangedSettingsViaSetter()
     {
-        $sut = new Cors();
+        $sut = new MiddlewareCors();
         $sut->setSettings(['maxAge' => 123, 'allowCredentials' => true]);
         $expected           = $this->defaults;
         $expected['maxAge'] = 123;
@@ -108,12 +108,12 @@ class CorsTest extends \PHPUnit_Framework_TestCase
      * Checks the settings will allow random stuff to be set.
      *
      * @test
-     * @covers \Bairwell\Cors::__construct
-     * @covers \Bairwell\Cors::getSettings
+     * @covers \Bairwell\MiddlewareCors::__construct
+     * @covers \Bairwell\MiddlewareCors::getSettings
      */
     public function testCheckChangedSettingsViaSetterRandomSettings()
     {
-        $sut = new Cors();
+        $sut = new MiddlewareCors();
         $sut->setSettings(['maxAge' => 123, 'allowCredentials' => true, 'random' => '123']);
         $expected           = $this->defaults;
         $expected['maxAge'] = 123;
@@ -130,8 +130,8 @@ class CorsTest extends \PHPUnit_Framework_TestCase
      * Should have no CORS headers back.
      *
      * @test
-     * @covers \Bairwell\Cors::__construct
-     * @covers \Bairwell\Cors::__invoke
+     * @covers \Bairwell\MiddlewareCors::__construct
+     * @covers \Bairwell\MiddlewareCors::__invoke
      */
     public function testInvokerGetDefaults()
     {
@@ -162,10 +162,10 @@ class CorsTest extends \PHPUnit_Framework_TestCase
      * and next called.
      *
      * @test
-     * @covers \Bairwell\Cors::__construct
-     * @covers \Bairwell\Cors::__invoke
-     * @covers \Bairwell\Cors\Traits\Parse::parseOriginMatch
-     * @covers \Bairwell\Cors\Traits\Parse::parseOrigin
+     * @covers \Bairwell\MiddlewareCors::__construct
+     * @covers \Bairwell\MiddlewareCors::__invoke
+     * @covers \Bairwell\MiddlewareCors\Traits\Parse::parseOriginMatch
+     * @covers \Bairwell\MiddlewareCors\Traits\Parse::parseOrigin
      */
     public function testInvokerWithOriginHeader()
     {
@@ -203,10 +203,10 @@ class CorsTest extends \PHPUnit_Framework_TestCase
      * and next called.
      *
      * @test
-     * @covers \Bairwell\Cors::__construct
-     * @covers \Bairwell\Cors::__invoke
-     * @covers \Bairwell\Cors\Traits\Parse::parseOriginMatch
-     * @covers \Bairwell\Cors\Traits\Parse::parseOrigin
+     * @covers \Bairwell\MiddlewareCors::__construct
+     * @covers \Bairwell\MiddlewareCors::__invoke
+     * @covers \Bairwell\MiddlewareCors\Traits\Parse::parseOriginMatch
+     * @covers \Bairwell\MiddlewareCors\Traits\Parse::parseOrigin
      */
     public function testInvokerWithCustomOriginHeader()
     {
@@ -241,11 +241,11 @@ class CorsTest extends \PHPUnit_Framework_TestCase
      * should get access denied.
      *
      * @test
-     * @covers \Bairwell\Cors::__construct
-     * @covers \Bairwell\Cors::__invoke
-     * @covers \Bairwell\Cors\Traits\Parse::parseOriginMatch
-     * @covers \Bairwell\Cors\Traits\Parse::parseOrigin
-     * @uses \Bairwell\Cors\Exceptions\BadOrigin
+     * @covers \Bairwell\MiddlewareCors::__construct
+     * @covers \Bairwell\MiddlewareCors::__invoke
+     * @covers \Bairwell\MiddlewareCors\Traits\Parse::parseOriginMatch
+     * @covers \Bairwell\MiddlewareCors\Traits\Parse::parseOrigin
+     * @uses \Bairwell\MiddlewareCors\Exceptions\BadOrigin
      */
     public function testInvokerWithCustomOriginHeaderInvalid()
     {
@@ -284,10 +284,10 @@ class CorsTest extends \PHPUnit_Framework_TestCase
      * should just get "Next" as (with a blank/unset origin), this is not a cors call.
      *
      * @test
-     * @covers \Bairwell\Cors::__construct
-     * @covers \Bairwell\Cors::__invoke
-     * @covers \Bairwell\Cors\Traits\Parse::parseOriginMatch
-     * @covers \Bairwell\Cors\Traits\Parse::parseOrigin
+     * @covers \Bairwell\MiddlewareCors::__construct
+     * @covers \Bairwell\MiddlewareCors::__invoke
+     * @covers \Bairwell\MiddlewareCors\Traits\Parse::parseOriginMatch
+     * @covers \Bairwell\MiddlewareCors\Traits\Parse::parseOrigin
      */
     public function testInvokerWithCustomOriginHeaderEmpty()
     {
@@ -316,11 +316,11 @@ class CorsTest extends \PHPUnit_Framework_TestCase
      * should get access denied.
      *
      * @test
-     * @covers \Bairwell\Cors::__construct
-     * @covers \Bairwell\Cors::__invoke
-     * @covers \Bairwell\Cors\Traits\Parse::parseOriginMatch
-     * @covers \Bairwell\Cors\Traits\Parse::parseOrigin
-     * @uses \Bairwell\Cors\Exceptions\BadOrigin
+     * @covers \Bairwell\MiddlewareCors::__construct
+     * @covers \Bairwell\MiddlewareCors::__invoke
+     * @covers \Bairwell\MiddlewareCors\Traits\Parse::parseOriginMatch
+     * @covers \Bairwell\MiddlewareCors\Traits\Parse::parseOrigin
+     * @uses \Bairwell\MiddlewareCors\Exceptions\BadOrigin
      */
     public function testInvokerWithCustomOriginHeaderDummyCallback()
     {
@@ -358,11 +358,11 @@ class CorsTest extends \PHPUnit_Framework_TestCase
      * should get access denied.
      *
      * @test
-     * @covers \Bairwell\Cors::__construct
-     * @covers \Bairwell\Cors::__invoke
-     * @covers \Bairwell\Cors\Traits\Parse::parseOriginMatch
-     * @covers \Bairwell\Cors\Traits\Parse::parseOrigin
-     * @uses \Bairwell\Cors\Exceptions\BadOrigin
+     * @covers \Bairwell\MiddlewareCors::__construct
+     * @covers \Bairwell\MiddlewareCors::__invoke
+     * @covers \Bairwell\MiddlewareCors\Traits\Parse::parseOriginMatch
+     * @covers \Bairwell\MiddlewareCors\Traits\Parse::parseOrigin
+     * @uses \Bairwell\MiddlewareCors\Exceptions\BadOrigin
      */
     public function testInvokerWithCustomOriginHeaderCustomCallbacks()
     {
@@ -406,10 +406,10 @@ class CorsTest extends \PHPUnit_Framework_TestCase
      * and next called.
      *
      * @test
-     * @covers \Bairwell\Cors::__construct
-     * @covers \Bairwell\Cors::__invoke
-     * @covers \Bairwell\Cors\Traits\Parse::parseOriginMatch
-     * @covers \Bairwell\Cors\Traits\Parse::parseOrigin
+     * @covers \Bairwell\MiddlewareCors::__construct
+     * @covers \Bairwell\MiddlewareCors::__invoke
+     * @covers \Bairwell\MiddlewareCors\Traits\Parse::parseOriginMatch
+     * @covers \Bairwell\MiddlewareCors\Traits\Parse::parseOrigin
      */
     public function testInvokerWithCustomOriginHeaderCustomAllowedCallbacks()
     {
@@ -450,10 +450,10 @@ class CorsTest extends \PHPUnit_Framework_TestCase
      * and next called.
      *
      * @test
-     * @covers \Bairwell\Cors::__construct
-     * @covers \Bairwell\Cors::__invoke
-     * @covers \Bairwell\Cors\Traits\Parse::parseOriginMatch
-     * @covers \Bairwell\Cors\Traits\Parse::parseOrigin
+     * @covers \Bairwell\MiddlewareCors::__construct
+     * @covers \Bairwell\MiddlewareCors::__invoke
+     * @covers \Bairwell\MiddlewareCors\Traits\Parse::parseOriginMatch
+     * @covers \Bairwell\MiddlewareCors\Traits\Parse::parseOrigin
      */
     public function testInvokerWithOriginArray()
     {
@@ -493,10 +493,10 @@ class CorsTest extends \PHPUnit_Framework_TestCase
      * and next called.
      *
      * @test
-     * @covers \Bairwell\Cors::__construct
-     * @covers \Bairwell\Cors::__invoke
-     * @covers \Bairwell\Cors\Traits\Parse::parseOriginMatch
-     * @covers \Bairwell\Cors\Traits\Parse::parseOrigin
+     * @covers \Bairwell\MiddlewareCors::__construct
+     * @covers \Bairwell\MiddlewareCors::__invoke
+     * @covers \Bairwell\MiddlewareCors\Traits\Parse::parseOriginMatch
+     * @covers \Bairwell\MiddlewareCors\Traits\Parse::parseOrigin
      */
     public function testInvokerWithOriginArrayWildcard()
     {
@@ -535,11 +535,11 @@ class CorsTest extends \PHPUnit_Framework_TestCase
      * access denied.
      *
      * @test
-     * @covers \Bairwell\Cors::__construct
-     * @covers \Bairwell\Cors::__invoke
-     * @covers \Bairwell\Cors\Traits\Parse::parseOriginMatch
-     * @covers \Bairwell\Cors\Traits\Parse::parseOrigin
-     * @uses \Bairwell\Cors\Exceptions\BadOrigin
+     * @covers \Bairwell\MiddlewareCors::__construct
+     * @covers \Bairwell\MiddlewareCors::__invoke
+     * @covers \Bairwell\MiddlewareCors\Traits\Parse::parseOriginMatch
+     * @covers \Bairwell\MiddlewareCors\Traits\Parse::parseOrigin
+     * @uses \Bairwell\MiddlewareCors\Exceptions\BadOrigin
      */
     public function testInvokerWithOriginArrayInvalid()
     {
@@ -583,8 +583,8 @@ class CorsTest extends \PHPUnit_Framework_TestCase
      * and next called.
      *
      * @test
-     * @covers \Bairwell\Cors::__construct
-     * @covers \Bairwell\Cors::__invoke
+     * @covers \Bairwell\MiddlewareCors::__construct
+     * @covers \Bairwell\MiddlewareCors::__invoke
      */
     public function testInvokerWithOriginHeaderAndCredentials()
     {
@@ -629,8 +629,8 @@ class CorsTest extends \PHPUnit_Framework_TestCase
      * and next called.
      *
      * @test
-     * @covers \Bairwell\Cors::__construct
-     * @covers \Bairwell\Cors::__invoke
+     * @covers \Bairwell\MiddlewareCors::__construct
+     * @covers \Bairwell\MiddlewareCors::__invoke
      */
     public function testInvokerWithOriginHeaderAndCredentialsWithHeaders()
     {

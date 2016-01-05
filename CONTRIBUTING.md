@@ -16,7 +16,7 @@ All pull requests must adhere to the [PSR-2 standard](http://www.php-fig.org/psr
 
 This can be checked via, you can run the following commands to check if everything is ready to submit:
 
-    cd cors
+    cd cors-middleware
     vendor/bin/phpcs -np
 
 Which should give you no output, indicating that there are no coding standard errors. And then:
@@ -24,11 +24,11 @@ Which should give you no output, indicating that there are no coding standard er
 
 ## Unit Testing
 
-All pull requests must be accompanied by passing unit tests and complete code coverage. The Bairwell\Cors library uses phpunit for testing.
+All pull requests must be accompanied by passing unit tests and complete code coverage. The Bairwell\MiddlewareCors library uses phpunit for testing.
 
 [Learn about PHPUnit](https://github.com/sebastianbergmann/phpunit/)
 
-    cd cors
+    cd cors-middleware
     vendor/bin/phpunit
 
 Which should give you no failures or errors. You can ignore any skipped tests as these are for external tools.

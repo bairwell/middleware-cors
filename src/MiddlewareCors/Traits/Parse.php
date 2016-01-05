@@ -4,7 +4,7 @@
  *
  * All the CORs orientated parsing code.
  *
- * Part of the Bairwell\Cors package.
+ * Part of the Bairwell\MiddlewareCors package.
  *
  * (c) Richard Bairwell <richard@bairwell.com>
  *
@@ -13,7 +13,7 @@
  */
 declare (strict_types = 1);
 
-namespace Bairwell\Cors\Traits;
+namespace Bairwell\MiddlewareCors\Traits;
 
 use Psr\Http\Message\ServerRequestInterface;
 
