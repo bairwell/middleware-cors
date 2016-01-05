@@ -1,26 +1,26 @@
 <?php
 /**
- * Class CorsTest parse..
+ * Class MiddlewareCorsTest parse..
  *
- * Tests the CORs middleware layer.
+ * Tests the MiddlewareCors middleware layer.
  */
 declare (strict_types = 1);
 
-namespace Bairwell\Cors\Traits;
+namespace Bairwell\MiddlewareCors\Traits;
 
-use Bairwell\Cors;
+use Bairwell\MiddlewareCors;
 use Psr\Log\LoggerInterface;
 use Monolog\Handler\TestHandler;
 use Monolog\Logger;
 
 /**
- * Class CorsTest.
- * Tests the CORs middleware layer.
+ * Class MiddlewareCorsTest.
+ * Tests the MiddlewareCors middleware layer.
  *
- * @uses \Bairwell\Cors
- * @uses \Bairwell\Cors\Traits\Parse
- * @uses \Bairwell\Cors\Preflight
- * @uses \Bairwell\Cors\ValidateSettings
+ * @uses \Bairwell\MiddlewareCors
+ * @uses \Bairwell\MiddlewareCors\Traits\Parse
+ * @uses \Bairwell\MiddlewareCors\Preflight
+ * @uses \Bairwell\MiddlewareCors\ValidateSettings
  */
 class ParseTest extends \PHPUnit_Framework_TestCase
 {
@@ -44,7 +44,7 @@ class ParseTest extends \PHPUnit_Framework_TestCase
      * Uses reflection as this is a protected method.
      *
      * @test
-     * @covers \Bairwell\Cors\Traits\Parse::parseItem
+     * @covers \Bairwell\MiddlewareCors\Traits\Parse::parseItem
      */
     public function testParseItemArrays()
     {
@@ -67,7 +67,7 @@ class ParseTest extends \PHPUnit_Framework_TestCase
      * Uses reflection as this is a protected method.
      *
      * @test
-     * @covers \Bairwell\Cors\Traits\Parse::parseItem
+     * @covers \Bairwell\MiddlewareCors\Traits\Parse::parseItem
      */
     public function testParseItemStrings()
     {
@@ -92,7 +92,7 @@ class ParseTest extends \PHPUnit_Framework_TestCase
      * Uses reflection as this is a protected method.
      *
      * @test
-     * @covers \Bairwell\Cors\Traits\Parse::parseItem
+     * @covers \Bairwell\MiddlewareCors\Traits\Parse::parseItem
      */
     public function testParseItemBools()
     {
@@ -124,7 +124,7 @@ class ParseTest extends \PHPUnit_Framework_TestCase
      * Uses reflection as this is a protected method.
      *
      * @test
-     * @covers \Bairwell\Cors\Traits\Parse::parseItem
+     * @covers \Bairwell\MiddlewareCors\Traits\Parse::parseItem
      */
     public function testParseItemInts()
     {
@@ -143,7 +143,7 @@ class ParseTest extends \PHPUnit_Framework_TestCase
      * Uses reflection as this is a protected method.
      *
      * @test
-     * @covers \Bairwell\Cors\Traits\Parse::parseItem
+     * @covers \Bairwell\MiddlewareCors\Traits\Parse::parseItem
      */
     public function testParseItemCallablesAsStrings()
     {
@@ -197,7 +197,7 @@ class ParseTest extends \PHPUnit_Framework_TestCase
      * Uses reflection as this is a protected method.
      *
      * @test
-     * @covers \Bairwell\Cors\Traits\Parse::parseItem
+     * @covers \Bairwell\MiddlewareCors\Traits\Parse::parseItem
      */
     public function testParseItemCallablesAsInts()
     {
@@ -260,7 +260,7 @@ class ParseTest extends \PHPUnit_Framework_TestCase
      * Uses reflection as this is a protected method.
      *
      * @test
-     * @covers \Bairwell\Cors\Traits\Parse::parseItem
+     * @covers \Bairwell\MiddlewareCors\Traits\Parse::parseItem
      */
     public function testParseItemCallablesAsBools()
     {
@@ -312,11 +312,11 @@ class ParseTest extends \PHPUnit_Framework_TestCase
      * Uses reflection as this is a protected method.
      *
      * @test
-     * @covers \Bairwell\Cors\Traits\Parse::parseAllowCredentials
+     * @covers \Bairwell\MiddlewareCors\Traits\Parse::parseAllowCredentials
      */
     public function testParseAllowCredentialsCallables()
     {
-        $sut              = new Cors();
+        $sut              = new MiddlewareCors();
         $reflection       = new \ReflectionClass(get_class($sut));
         $settingsProperty = $reflection->getProperty('settings');
         $settingsProperty->setAccessible(true);
@@ -369,11 +369,11 @@ class ParseTest extends \PHPUnit_Framework_TestCase
      * Uses reflection as this is a protected method.
      *
      * @test
-     * @covers \Bairwell\Cors\Traits\Parse::parseAllowCredentials
+     * @covers \Bairwell\MiddlewareCors\Traits\Parse::parseAllowCredentials
      */
     public function testParseAllowCredentialValues()
     {
-        $sut              = new Cors();
+        $sut              = new MiddlewareCors();
         $reflection       = new \ReflectionClass(get_class($sut));
         $settingsProperty = $reflection->getProperty('settings');
         $settingsProperty->setAccessible(true);
@@ -413,11 +413,11 @@ class ParseTest extends \PHPUnit_Framework_TestCase
      * Uses reflection as this is a protected method.
      *
      * @test
-     * @covers \Bairwell\Cors\Traits\Parse::parseMaxAge
+     * @covers \Bairwell\MiddlewareCors\Traits\Parse::parseMaxAge
      */
     public function testParseMaxAgeCallables()
     {
-        $sut              = new Cors();
+        $sut              = new MiddlewareCors();
         $reflection       = new \ReflectionClass(get_class($sut));
         $settingsProperty = $reflection->getProperty('settings');
         $settingsProperty->setAccessible(true);
@@ -496,11 +496,11 @@ class ParseTest extends \PHPUnit_Framework_TestCase
      * Uses reflection as this is a protected method.
      *
      * @test
-     * @covers \Bairwell\Cors\Traits\Parse::parseOrigin
+     * @covers \Bairwell\MiddlewareCors\Traits\Parse::parseOrigin
      */
     public function testParseOriginEmptyString()
     {
-        $sut              = new Cors();
+        $sut              = new MiddlewareCors();
         // setup the logger
         $this->logger  = new Logger('test');
         $this->testLogger = new TestHandler();
@@ -530,11 +530,11 @@ class ParseTest extends \PHPUnit_Framework_TestCase
      * Uses reflection as this is a protected method.
      *
      * @test
-     * @covers \Bairwell\Cors\Traits\Parse::parseOrigin
+     * @covers \Bairwell\MiddlewareCors\Traits\Parse::parseOrigin
      */
     public function testParseOriginInvalidString()
     {
-        $sut              = new Cors();
+        $sut              = new MiddlewareCors();
         // setup the logger
         $this->logger  = new Logger('test');
         $this->testLogger = new TestHandler();
@@ -564,11 +564,11 @@ class ParseTest extends \PHPUnit_Framework_TestCase
      * Uses reflection as this is a protected method.
      *
      * @test
-     * @covers \Bairwell\Cors\Traits\Parse::parseMaxAge
+     * @covers \Bairwell\MiddlewareCors\Traits\Parse::parseMaxAge
      */
     public function testParseMaxAgeValues()
     {
-        $sut              = new Cors();
+        $sut              = new MiddlewareCors();
         $reflection       = new \ReflectionClass(get_class($sut));
         $settingsProperty = $reflection->getProperty('settings');
         $settingsProperty->setAccessible(true);
@@ -622,7 +622,7 @@ class ParseTest extends \PHPUnit_Framework_TestCase
      */
     protected function parseItem($settingValue, string $expectedResult, bool $isSingle = false)
     {
-        $sut              = new Cors();
+        $sut              = new MiddlewareCors();
         $reflection       = new \ReflectionClass(get_class($sut));
         $settingsProperty = $reflection->getProperty('settings');
         $settingsProperty->setAccessible(true);

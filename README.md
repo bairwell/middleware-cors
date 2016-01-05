@@ -1,11 +1,11 @@
-# Bairwell\Cors
+# Bairwell\Middleware-Cors
 
-[![Latest Stable Version](https://poser.pugx.org/bairwell/cors/v/stable)](https://packagist.org/packages/bairwell/cors)
-[![License](https://poser.pugx.org/bairwell/cors/license)](https://packagist.org/packages/bairwell/cors)
+[![Latest Stable Version](https://poser.pugx.org/bairwell/middleware-cors/v/stable)](https://packagist.org/packages/bairwell/middleware-cors)
+[![License](https://poser.pugx.org/bairwell/middleware-cors/license)](https://packagist.org/packages/bairwell/middleware-cors)
 [![SensioLabsInsight](https://insight.sensiolabs.com/projects/8aea9987-e478-4faa-a3fe-728e9423b4e7/mini.png)](https://insight.sensiolabs.com/projects/8aea9987-e478-4faa-a3fe-728e9423b4e7)
-[![Coverage Status](https://coveralls.io/repos/bairwell/cors/badge.svg?branch=master&service=github)](https://coveralls.io/github/bairwell/cors?branch=master)
-[![Build Status](https://travis-ci.org/bairwell/cors.svg?branch=master)](https://travis-ci.org/bairwell/cors)
-[![Total Downloads](https://poser.pugx.org/bairwell/cors/downloads)](https://packagist.org/packages/bairwell/cors)
+[![Coverage Status](https://coveralls.io/repos/bairwell/middleware-cors/badge.svg?branch=master&service=github)](https://coveralls.io/github/bairwell/middleware-cors?branch=master)
+[![Build Status](https://travis-ci.org/bairwell/middleware-cors.svg?branch=master)](https://travis-ci.org/bairwell/middleware-cors)
+[![Total Downloads](https://poser.pugx.org/bairwell/middleware-cors/downloads)](https://packagist.org/packages/bairwell/middleware-cors)
 
 This is a PHP 7 [Composer](https://getcomposer.org/) compatible library for providing a [PSR-7]((http://www.php-fig.org/psr/psr-7/) compatible middleware layer for handling
 "[CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/Access_control_CORS)" (Cross Origin Request Security/Cross-Origin Http Request/HTTP access control) headers and security.
@@ -24,7 +24,28 @@ This is a PHP 7 [Composer](https://getcomposer.org/) compatible library for prov
 * Licensed under the [MIT License](https://opensource.org/licenses/MIT) allowing you to practically do whatever you want.
 * Uses namespaces and is 100% object orientated.
 * Blocks invalid settings.
-* Minimal third party requirements (just the definition files "psr/http-message" and "psr/log" for main, and PHPUnit, PHPCodeSniffer, SlimFramework and Monolog for development/testing).
+* Minimal third party requirements (just the definition files "[psr/http-message](https://github.com/php-fig/http-message)" and "[psr/log](https://github.com/php-fig/log)" as interface definitions, and [PHPUnit](https://phpunit.de/), [PHPCodeSniffer](http://www.squizlabs.com/php-codesniffer), and [Monolog](https://github.com/Seldaek/monolog) for development/testing).
+
+# Installation
+Install the latest version with Composer via:
+
+```bash
+$ composer require bairwell/middleware-cors
+```
+
+or by modifying your `composer.json` file:
+````
+{
+    "require": {
+        "bairwell/middleware-cors" : "@stable"
+    }
+}
+````
+
+or from the Github repository (which is needed to be able to fork and contribute):
+````
+$ git clone git://github.com:bairwell/middleware-cors.git
+````
 
 # Usage
 
@@ -32,7 +53,7 @@ You can utilise this CORs library as simply as:
 
 ```php
 $slim=new \Slim\App(); // use Slim3 as it supports PSR7 middleware
-$slim->add(new Cors()); // add CORs
+$slim->add(new MiddlewareCors()); // add CORs
 // add routes
 $slim->run(); // get Slim running
 ```
@@ -46,7 +67,7 @@ $slim=new \Slim\App(); // use Slim3 as it supports PSR7 middleware
 $config=[
     'origin'=>'*.example.com' // allow all hosts ending example.com
 ];
-$slim->add(new Cors($config)); // add CORs
+$slim->add(new MiddlewareCors($config)); // add CORs
 // add routes
 $slim->run(); // get Slim running
 ```
@@ -59,7 +80,7 @@ $config=[
     'origin'=>['*.example.com','*.example.com.test','example.com','dev.*',
     'allowCredentials'=>true
 ];
-$slim->add(new Cors($config)); // add CORs
+$slim->add(new MiddlewareCors($config)); // add CORs
 // add routes
 $slim->run(); // get Slim running
 ```
@@ -68,7 +89,7 @@ which will allow all Origins ending .example.com or *.example.com.test, the exac
 any host starting with dev. It'll also allow credentials to be allowed.
 
 For a more complicated integration which relies on the Slim router to feed back which methods are actually
-allowed per route, see ``tests/Cors/FunctionalTests/SlimTest.php``
+allowed per route, see ``tests/MiddlewareCors/FunctionalTests/SlimTest.php``
 
 ## Standards
 
@@ -101,7 +122,7 @@ For a list of the tests that have ran:
 `vendor/bin/phpunit --tap`
 
 To restrict the tests run:
-`vendor/bin/phpunit --filter 'Cors\\Exceptions\\BadOrigin'`
+`vendor/bin/phpunit --filter 'MiddlewareCors\\Exceptions\\BadOrigin'`
 
 or just
 
@@ -110,5 +131,21 @@ or just
 for all tests which have "Exception" in them and:
 `vendor/bin/phpunit --filter '(ExceptionTest::testEverything|ExceptionTest::testStub)'`
 
-to test the two testEverything and testStub methods in the ExceptionTest class.
+to test the two testEverything and testStub methods in the ExceptionTest class (for example).
+
+# Licence/License
+
+Licenced under the MIT license. See LICENSE.md for full information.
+
+Bairwell/MiddlewareCors is Copyright (c) Bairwell Ltd/Richard Bairwell 2016.
+
+# Supporting development
+
+You can help support development of this library via a variety of methods:
+
+ * "Sponsorship" via a monthly donation via [Patreon](https://www.patreon.com/rbairwell)
+ * [Reporting issues](https://github.com/bairwell/middleware-cors/issues)
+ * Making updates via [Github](https://github.com/bairwell/middleware-cors)
+ * Spreading the word.
+ * Just letting me know what you think of it via [Twitter](http://twitter.com/rbairwell) or via [Bairwell Ltd](http://www.bairwell.com)
 

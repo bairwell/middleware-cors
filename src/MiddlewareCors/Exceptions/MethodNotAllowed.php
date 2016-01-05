@@ -9,7 +9,7 @@
  */
 declare (strict_types = 1);
 
-namespace Bairwell\Cors\Exceptions;
+namespace Bairwell\MiddlewareCors\Exceptions;
 
 /**
  * CORS Exception for handling bad/invalid methods which are sent.

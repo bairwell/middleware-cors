@@ -2,7 +2,7 @@
 /**
  * Tests the exceptions.
  *
- * Part of the Bairwell\Cors package.
+ * Part of the Bairwell\MiddlewareCors package.
  *
  * (c) Richard Bairwell <richard@bairwell.com>
  *
@@ -11,7 +11,7 @@
  */
 declare (strict_types = 1);
 
-namespace Bairwell\Cors\Exceptions;
+namespace Bairwell\MiddlewareCors\Exceptions;
 
 /**
  * Class ExceptionsTest.
@@ -23,13 +23,13 @@ class ExceptionsTest extends \PHPUnit_Framework_TestCase
      * Bad Origin.
      *
      * @test
-     * @covers \Bairwell\Cors\Exceptions\BadOrigin
-     * @covers \Bairwell\Cors\Exceptions\ExceptionAbstract
+     * @covers \Bairwell\MiddlewareCors\Exceptions\BadOrigin
+     * @covers \Bairwell\MiddlewareCors\Exceptions\ExceptionAbstract
      */
     public function testBadOrigin() {
         $sut=new BadOrigin();
-        $this->assertInstanceOf('\Bairwell\Cors\Exceptions\BadOrigin',$sut);
-        $this->assertInstanceOf('\Bairwell\Cors\Exceptions\ExceptionAbstract',$sut);
+        $this->assertInstanceOf('\Bairwell\MiddlewareCors\Exceptions\BadOrigin',$sut);
+        $this->assertInstanceOf('\Bairwell\MiddlewareCors\Exceptions\ExceptionAbstract',$sut);
         $this->basicChecks($sut);
     }
 
@@ -37,13 +37,13 @@ class ExceptionsTest extends \PHPUnit_Framework_TestCase
      * Header not allowed.
      *
      * @test
-     * @covers \Bairwell\Cors\Exceptions\HeaderNotAllowed
-     * @covers \Bairwell\Cors\Exceptions\ExceptionAbstract
+     * @covers \Bairwell\MiddlewareCors\Exceptions\HeaderNotAllowed
+     * @covers \Bairwell\MiddlewareCors\Exceptions\ExceptionAbstract
      */
     public function testHeaderNotAllowed() {
         $sut=new HeaderNotAllowed();
-        $this->assertInstanceOf('\Bairwell\Cors\Exceptions\HeaderNotAllowed',$sut);
-        $this->assertInstanceOf('\Bairwell\Cors\Exceptions\ExceptionAbstract',$sut);
+        $this->assertInstanceOf('\Bairwell\MiddlewareCors\Exceptions\HeaderNotAllowed',$sut);
+        $this->assertInstanceOf('\Bairwell\MiddlewareCors\Exceptions\ExceptionAbstract',$sut);
         $this->basicChecks($sut);
     }
 
@@ -51,39 +51,39 @@ class ExceptionsTest extends \PHPUnit_Framework_TestCase
      * Method not allowed.
      *
      * @test
-     * @covers \Bairwell\Cors\Exceptions\MethodNotAllowed
-     * @covers \Bairwell\Cors\Exceptions\ExceptionAbstract
+     * @covers \Bairwell\MiddlewareCors\Exceptions\MethodNotAllowed
+     * @covers \Bairwell\MiddlewareCors\Exceptions\ExceptionAbstract
      */
     public function testMethodNotAllowed() {
         $sut=new MethodNotAllowed();
-        $this->assertInstanceOf('\Bairwell\Cors\Exceptions\MethodNotAllowed',$sut);
-        $this->assertInstanceOf('\Bairwell\Cors\Exceptions\ExceptionAbstract',$sut);
+        $this->assertInstanceOf('\Bairwell\MiddlewareCors\Exceptions\MethodNotAllowed',$sut);
+        $this->assertInstanceOf('\Bairwell\MiddlewareCors\Exceptions\ExceptionAbstract',$sut);
         $this->basicChecks($sut);
     }
     /**
      * No Headers Allowed.
      *
      * @test
-     * @covers \Bairwell\Cors\Exceptions\MethodNotAllowed
-     * @covers \Bairwell\Cors\Exceptions\ExceptionAbstract
+     * @covers \Bairwell\MiddlewareCors\Exceptions\MethodNotAllowed
+     * @covers \Bairwell\MiddlewareCors\Exceptions\ExceptionAbstract
      */
     public function testNoHeadersAllowed() {
         $sut=new NoHeadersAllowed();
-        $this->assertInstanceOf('\Bairwell\Cors\Exceptions\NoHeadersAllowed',$sut);
-        $this->assertInstanceOf('\Bairwell\Cors\Exceptions\ExceptionAbstract',$sut);
+        $this->assertInstanceOf('\Bairwell\MiddlewareCors\Exceptions\NoHeadersAllowed',$sut);
+        $this->assertInstanceOf('\Bairwell\MiddlewareCors\Exceptions\ExceptionAbstract',$sut);
         $this->basicChecks($sut);
     }
     /**
      * No Method.
      *
      * @test
-     * @covers \Bairwell\Cors\Exceptions\MethodNotAllowed
-     * @covers \Bairwell\Cors\Exceptions\ExceptionAbstract
+     * @covers \Bairwell\MiddlewareCors\Exceptions\MethodNotAllowed
+     * @covers \Bairwell\MiddlewareCors\Exceptions\ExceptionAbstract
      */
     public function testNoMethod() {
         $sut=new NoMethod();
-        $this->assertInstanceOf('\Bairwell\Cors\Exceptions\NoMethod',$sut);
-        $this->assertInstanceOf('\Bairwell\Cors\Exceptions\ExceptionAbstract',$sut);
+        $this->assertInstanceOf('\Bairwell\MiddlewareCors\Exceptions\NoMethod',$sut);
+        $this->assertInstanceOf('\Bairwell\MiddlewareCors\Exceptions\ExceptionAbstract',$sut);
         $this->basicChecks($sut);
     }
 

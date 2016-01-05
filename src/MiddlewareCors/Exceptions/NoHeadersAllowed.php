@@ -10,7 +10,7 @@
  */
 declare (strict_types = 1);
 
-namespace Bairwell\Cors\Exceptions;
+namespace Bairwell\MiddlewareCors\Exceptions;
 
 /**
  * CORS Exception for handling inbound requests which specify headers will be sent,

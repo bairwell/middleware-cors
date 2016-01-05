@@ -1,21 +1,21 @@
 <?php
 /**
- * Class CorsTest validate.
+ * Class MiddlewareCorsTest validate.
  *
- * Tests the CORs middleware layer.
+ * Tests the MiddlewareCors middleware layer.
  */
 declare (strict_types = 1);
 
-namespace Bairwell\Cors\Traits;
+namespace Bairwell\MiddlewareCors\Traits;
 
-use Bairwell\Cors;
+use Bairwell\MiddlewareCors;
 
 /**
- * Class CorsTest validate.
+ * Class MiddlewareCorsTest validate.
  *
- * Tests the CORs middleware layer.
+ * Tests the MiddlewareCors middleware layer.
  *
- * @uses \Bairwell\Cors\ValidateSettings
+ * @uses \Bairwell\MiddlewareCors\ValidateSettings
  */
 class ValidateSettingsTest extends \PHPUnit_Framework_TestCase
 {
@@ -45,16 +45,16 @@ class ValidateSettingsTest extends \PHPUnit_Framework_TestCase
      * Covers checking the validation settings.
      *
      * @test
-     * @covers \Bairwell\Cors\ValidateSettings::__invoke
-     * @covers \Bairwell\Cors\ValidateSettings::validateString
-     * @covers \Bairwell\Cors\ValidateSettings::validateArray
-     * @covers \Bairwell\Cors\ValidateSettings::validateCallable
-     * @covers \Bairwell\Cors\ValidateSettings::validateInt
-     * @covers \Bairwell\Cors\ValidateSettings::validateBool
+     * @covers \Bairwell\MiddlewareCors\ValidateSettings::__invoke
+     * @covers \Bairwell\MiddlewareCors\ValidateSettings::validateString
+     * @covers \Bairwell\MiddlewareCors\ValidateSettings::validateArray
+     * @covers \Bairwell\MiddlewareCors\ValidateSettings::validateCallable
+     * @covers \Bairwell\MiddlewareCors\ValidateSettings::validateInt
+     * @covers \Bairwell\MiddlewareCors\ValidateSettings::validateBool
      */
     public function testValidateSettings()
     {
-        $sut              = new Cors\ValidateSettings();
+        $sut              = new MiddlewareCors\ValidateSettings();
         // general tests
         $testData = [
             ['notOn' => 'string', 'value' => 'abc'],

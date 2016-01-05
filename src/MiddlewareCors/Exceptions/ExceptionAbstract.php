@@ -9,7 +9,7 @@
  */
 declare (strict_types = 1);
 
-namespace Bairwell\Cors\Exceptions;
+namespace Bairwell\MiddlewareCors\Exceptions;
 
 /**
  * Class CorsException.

@@ -4,7 +4,7 @@
  *
  * All the CORs orientated preflight code.
  *
- * Part of the Bairwell\Cors package.
+ * Part of the Bairwell\MiddlewareCors package.
  *
  * (c) Richard Bairwell <richard@bairwell.com>
  *
@@ -13,14 +13,14 @@
  */
 declare (strict_types = 1);
 
-namespace Bairwell\Cors;
+namespace Bairwell\MiddlewareCors;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Bairwell\Cors\Exceptions\NoMethod;
-use Bairwell\Cors\Exceptions\MethodNotAllowed;
-use Bairwell\Cors\Exceptions\NoHeadersAllowed;
-use Bairwell\Cors\Exceptions\HeaderNotAllowed;
+use Bairwell\MiddlewareCors\Exceptions\NoMethod;
+use Bairwell\MiddlewareCors\Exceptions\MethodNotAllowed;
+use Bairwell\MiddlewareCors\Exceptions\NoHeadersAllowed;
+use Bairwell\MiddlewareCors\Exceptions\HeaderNotAllowed;
 
 /**
  * Preflight.

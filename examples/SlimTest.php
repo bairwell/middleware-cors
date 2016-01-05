@@ -1,11 +1,11 @@
 <?php
 
-namespace Bairwell\Cors\FunctionalTests;
+namespace Bairwell\MiddlewareCors\FunctionalTests;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use FastRoute\Dispatcher;
-use Bairwell\Cors;
+use Bairwell\MiddlewareCors;
 use Interop\Container\ContainerInterface;
 use Slim\Http\Headers;
 use Slim\Http\Request;
@@ -57,9 +57,9 @@ class SlimTest extends \PHPUnit_Framework_TestCase
      *
      * @param ContainerInterface              $container The Slim Container.
      *
-     * @return Cors
+     * @return MiddlewareCors
      */
-    protected function getCors(ContainerInterface $container) : Cors {
+    protected function getCors(ContainerInterface $container) : MiddlewareCors {
         // set our allowed methods callback to integrate with Slim
         $corsAllowedMethods = function (ServerRequestInterface $request) use ($container) : array {
             // if this closure is called, make sure it has the route available in the container.
@@ -95,7 +95,7 @@ class SlimTest extends \PHPUnit_Framework_TestCase
             return $methods;
         };
         // setup CORs
-        $cors    = new Cors(
+        $cors    = new MiddlewareCors(
             [
                 'origin'           => $this->allowedHosts,
                 'exposeHeaders'    => '',
@@ -253,7 +253,7 @@ class SlimTest extends \PHPUnit_Framework_TestCase
         $body=$result->getBody();
         $body->rewind();
         $contents=$body->getContents();
-        $this->assertEquals('Error Handler caught exception type Bairwell\Cors\Exceptions\NoMethod: No method provided',$contents);
+        $this->assertEquals('Error Handler caught exception type Bairwell\MiddlewareCors\Exceptions\NoMethod: No method provided',$contents);
         $this->assertEquals(500,$result->getStatusCode());
         $this->assertEquals('Internal Server Error',$result->getReasonPhrase());
         $headers=$result->getHeaders();

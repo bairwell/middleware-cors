@@ -1,35 +1,35 @@
 <?php
 /**
- * Cors Test preflight.
+ * MiddlewareCors Test preflight.
  */
 declare (strict_types = 1);
 
-namespace Bairwell\Cors;
+namespace Bairwell\MiddlewareCors;
 
-use Bairwell\Cors;
-use Bairwell\Cors\Exceptions\NoMethod;
-use Bairwell\Cors\Exceptions\MethodNotAllowed;
-use Bairwell\Cors\Exceptions\NoHeadersAllowed;
-use Bairwell\Cors\Exceptions\HeaderNotAllowed;
+use Bairwell\MiddlewareCors;
+use Bairwell\MiddlewareCors\Exceptions\NoMethod;
+use Bairwell\MiddlewareCors\Exceptions\MethodNotAllowed;
+use Bairwell\MiddlewareCors\Exceptions\NoHeadersAllowed;
+use Bairwell\MiddlewareCors\Exceptions\HeaderNotAllowed;
 /**
- * Class CorsTest.
- * Tests the CORs middleware layer.
+ * Class MiddlewareCorsTest.
+ * Tests the MiddlewareCors middleware layer.
  *
- * @uses \Bairwell\Cors
- * @uses \Bairwell\Cors\Traits\Parse
- * @uses \Bairwell\Cors\Preflight
- * @uses \Bairwell\Cors\ValidateSettings
- * @uses \Bairwell\Cors\Exceptions\ExceptionAbstract
+ * @uses \Bairwell\MiddlewareCors
+ * @uses \Bairwell\MiddlewareCors\Traits\Parse
+ * @uses \Bairwell\MiddlewareCors\Preflight
+ * @uses \Bairwell\MiddlewareCors\ValidateSettings
+ * @uses \Bairwell\MiddlewareCors\Exceptions\ExceptionAbstract
  */
 class PreflightTest extends \PHPUnit_Framework_TestCase
 {
-    use \Bairwell\Cors\Traits\RunInvokeArrays;
+    use \Bairwell\MiddlewareCors\Traits\RunInvokeArrays;
 
     /**
      * Test the add log
      * @test
-     * @covers \Bairwell\Cors\Preflight::__construct
-     * @covers \Bairwell\Cors\Preflight::addLog
+     * @covers \Bairwell\MiddlewareCors\Preflight::__construct
+     * @covers \Bairwell\MiddlewareCors\Preflight::addLog
      */
     public function testAddLog() {
         $logger=function($logEntry) {
@@ -58,13 +58,13 @@ class PreflightTest extends \PHPUnit_Framework_TestCase
      * should get exception (no ACRM).
      *
      * @test
-     * @covers \Bairwell\Cors::__construct
-     * @covers \Bairwell\Cors::__invoke
-     * @covers \Bairwell\Cors\Preflight::__construct
-     * @covers \Bairwell\Cors\Preflight::addLog
-     * @covers \Bairwell\Cors\Preflight::__invoke
-     * @covers \Bairwell\Cors\Preflight::accessControlRequestHeaders
-     * @covers \Bairwell\Cors\Preflight::accessControlAllowMethods
+     * @covers \Bairwell\MiddlewareCors::__construct
+     * @covers \Bairwell\MiddlewareCors::__invoke
+     * @covers \Bairwell\MiddlewareCors\Preflight::__construct
+     * @covers \Bairwell\MiddlewareCors\Preflight::addLog
+     * @covers \Bairwell\MiddlewareCors\Preflight::__invoke
+     * @covers \Bairwell\MiddlewareCors\Preflight::accessControlRequestHeaders
+     * @covers \Bairwell\MiddlewareCors\Preflight::accessControlAllowMethods
      */
     public function testInvokerPreflightNoMethods()
     {
@@ -90,14 +90,14 @@ class PreflightTest extends \PHPUnit_Framework_TestCase
      * should get exception (no ACRM).
      *
      * @test
-     * @covers \Bairwell\Cors::__construct
-     * @covers \Bairwell\Cors::__invoke
-     * @covers \Bairwell\Cors\Preflight::__construct
-     * @covers \Bairwell\Cors\Preflight::addLog
-     * @covers \Bairwell\Cors\Preflight::__invoke
-     * @covers \Bairwell\Cors\Preflight::accessControlRequestHeaders
-     * @covers \Bairwell\Cors\Preflight::accessControlAllowMethods
-     * @uses \Bairwell\Cors\Exceptions\NoMethod
+     * @covers \Bairwell\MiddlewareCors::__construct
+     * @covers \Bairwell\MiddlewareCors::__invoke
+     * @covers \Bairwell\MiddlewareCors\Preflight::__construct
+     * @covers \Bairwell\MiddlewareCors\Preflight::addLog
+     * @covers \Bairwell\MiddlewareCors\Preflight::__invoke
+     * @covers \Bairwell\MiddlewareCors\Preflight::accessControlRequestHeaders
+     * @covers \Bairwell\MiddlewareCors\Preflight::accessControlAllowMethods
+     * @uses \Bairwell\MiddlewareCors\Exceptions\NoMethod
      */
     public function testInvokerPreflightNoAcrm()
     {
@@ -128,14 +128,14 @@ class PreflightTest extends \PHPUnit_Framework_TestCase
      * should get exception.
      *
      * @test
-     * @covers \Bairwell\Cors::__construct
-     * @covers \Bairwell\Cors::__invoke
-     * @covers \Bairwell\Cors\Preflight::__construct
-     * @covers \Bairwell\Cors\Preflight::addLog
-     * @covers \Bairwell\Cors\Preflight::__invoke
-     * @covers \Bairwell\Cors\Preflight::accessControlRequestHeaders
-     * @covers \Bairwell\Cors\Preflight::accessControlAllowMethods
-     * @uses \Bairwell\Cors\Exceptions\MethodNotAllowed
+     * @covers \Bairwell\MiddlewareCors::__construct
+     * @covers \Bairwell\MiddlewareCors::__invoke
+     * @covers \Bairwell\MiddlewareCors\Preflight::__construct
+     * @covers \Bairwell\MiddlewareCors\Preflight::addLog
+     * @covers \Bairwell\MiddlewareCors\Preflight::__invoke
+     * @covers \Bairwell\MiddlewareCors\Preflight::accessControlRequestHeaders
+     * @covers \Bairwell\MiddlewareCors\Preflight::accessControlAllowMethods
+     * @uses \Bairwell\MiddlewareCors\Exceptions\MethodNotAllowed
      */
     public function testInvokerPreflightInvalidAcrm()
     {
@@ -168,13 +168,13 @@ class PreflightTest extends \PHPUnit_Framework_TestCase
      * Access-Control-Allow-Headers.
      *
      * @test
-     * @covers \Bairwell\Cors::__construct
-     * @covers \Bairwell\Cors::__invoke
-     * @covers \Bairwell\Cors\Preflight::__construct
-     * @covers \Bairwell\Cors\Preflight::addLog
-     * @covers \Bairwell\Cors\Preflight::__invoke
-     * @covers \Bairwell\Cors\Preflight::accessControlRequestHeaders
-     * @covers \Bairwell\Cors\Preflight::accessControlAllowMethods
+     * @covers \Bairwell\MiddlewareCors::__construct
+     * @covers \Bairwell\MiddlewareCors::__invoke
+     * @covers \Bairwell\MiddlewareCors\Preflight::__construct
+     * @covers \Bairwell\MiddlewareCors\Preflight::addLog
+     * @covers \Bairwell\MiddlewareCors\Preflight::__invoke
+     * @covers \Bairwell\MiddlewareCors\Preflight::accessControlRequestHeaders
+     * @covers \Bairwell\MiddlewareCors\Preflight::accessControlAllowMethods
      */
     public function testInvokerPreflightValidAcrm()
     {
@@ -207,14 +207,14 @@ class PreflightTest extends \PHPUnit_Framework_TestCase
      * should get exception.
      *
      * @test
-     * @covers \Bairwell\Cors::__construct
-     * @covers \Bairwell\Cors::__invoke
-     * @covers \Bairwell\Cors\Preflight::__construct
-     * @covers \Bairwell\Cors\Preflight::addLog
-     * @covers \Bairwell\Cors\Preflight::__invoke
-     * @covers \Bairwell\Cors\Preflight::accessControlRequestHeaders
-     * @covers \Bairwell\Cors\Preflight::accessControlAllowMethods
-     * @uses \Bairwell\Cors\Exceptions\NoHeadersAllowed
+     * @covers \Bairwell\MiddlewareCors::__construct
+     * @covers \Bairwell\MiddlewareCors::__invoke
+     * @covers \Bairwell\MiddlewareCors\Preflight::__construct
+     * @covers \Bairwell\MiddlewareCors\Preflight::addLog
+     * @covers \Bairwell\MiddlewareCors\Preflight::__invoke
+     * @covers \Bairwell\MiddlewareCors\Preflight::accessControlRequestHeaders
+     * @covers \Bairwell\MiddlewareCors\Preflight::accessControlAllowMethods
+     * @uses \Bairwell\MiddlewareCors\Exceptions\NoHeadersAllowed
      */
     public function testInvokerPreflightValidAcrmInvalidAcrh()
     {
@@ -250,14 +250,14 @@ class PreflightTest extends \PHPUnit_Framework_TestCase
      * should get exception.
      *
      * @test
-     * @covers \Bairwell\Cors::__construct
-     * @covers \Bairwell\Cors::__invoke
-     * @covers \Bairwell\Cors\Preflight::__construct
-     * @covers \Bairwell\Cors\Preflight::addLog
-     * @covers \Bairwell\Cors\Preflight::__invoke
-     * @covers \Bairwell\Cors\Preflight::accessControlRequestHeaders
-     * @covers \Bairwell\Cors\Preflight::accessControlAllowMethods
-     * @uses Bairwell\Cors\Exceptions\HeaderNotAllowed
+     * @covers \Bairwell\MiddlewareCors::__construct
+     * @covers \Bairwell\MiddlewareCors::__invoke
+     * @covers \Bairwell\MiddlewareCors\Preflight::__construct
+     * @covers \Bairwell\MiddlewareCors\Preflight::addLog
+     * @covers \Bairwell\MiddlewareCors\Preflight::__invoke
+     * @covers \Bairwell\MiddlewareCors\Preflight::accessControlRequestHeaders
+     * @covers \Bairwell\MiddlewareCors\Preflight::accessControlAllowMethods
+     * @uses Bairwell\MiddlewareCors\Exceptions\HeaderNotAllowed
      */
     public function testInvokerPreflightValidAcrmDisallowedAcrh()
     {
@@ -296,13 +296,13 @@ class PreflightTest extends \PHPUnit_Framework_TestCase
      * Access-Control-Allow-Headers.
      *
      * @test
-     * @covers \Bairwell\Cors::__construct
-     * @covers \Bairwell\Cors::__invoke
-     * @covers \Bairwell\Cors\Preflight::__construct
-     * @covers \Bairwell\Cors\Preflight::addLog
-     * @covers \Bairwell\Cors\Preflight::__invoke
-     * @covers \Bairwell\Cors\Preflight::accessControlRequestHeaders
-     * @covers \Bairwell\Cors\Preflight::accessControlAllowMethods
+     * @covers \Bairwell\MiddlewareCors::__construct
+     * @covers \Bairwell\MiddlewareCors::__invoke
+     * @covers \Bairwell\MiddlewareCors\Preflight::__construct
+     * @covers \Bairwell\MiddlewareCors\Preflight::addLog
+     * @covers \Bairwell\MiddlewareCors\Preflight::__invoke
+     * @covers \Bairwell\MiddlewareCors\Preflight::accessControlRequestHeaders
+     * @covers \Bairwell\MiddlewareCors\Preflight::accessControlAllowMethods
      */
     public function testInvokerPreflightValidAcrmValidAcrh()
     {
@@ -349,13 +349,13 @@ class PreflightTest extends \PHPUnit_Framework_TestCase
      * Vary: Origin.
      *
      * @test
-     * @covers \Bairwell\Cors::__construct
-     * @covers \Bairwell\Cors::__invoke
-     * @covers \Bairwell\Cors\Preflight::__construct
-     * @covers \Bairwell\Cors\Preflight::addLog
-     * @covers \Bairwell\Cors\Preflight::__invoke
-     * @covers \Bairwell\Cors\Preflight::accessControlRequestHeaders
-     * @covers \Bairwell\Cors\Preflight::accessControlAllowMethods
+     * @covers \Bairwell\MiddlewareCors::__construct
+     * @covers \Bairwell\MiddlewareCors::__invoke
+     * @covers \Bairwell\MiddlewareCors\Preflight::__construct
+     * @covers \Bairwell\MiddlewareCors\Preflight::addLog
+     * @covers \Bairwell\MiddlewareCors\Preflight::__invoke
+     * @covers \Bairwell\MiddlewareCors\Preflight::accessControlRequestHeaders
+     * @covers \Bairwell\MiddlewareCors\Preflight::accessControlAllowMethods
      */
     public function testInvokerPreflightAllTheThings()
     {
@@ -394,8 +394,8 @@ class PreflightTest extends \PHPUnit_Framework_TestCase
      * Specific test to ensure PreflightAccessControlRequestHeaders returns empty arrays.
      *
      * @test
-     * @covers \Bairwell\Cors\Preflight::accessControlRequestHeaders
-     * @uses Bairwell\Cors\Exceptions\NoHeadersAllowed
+     * @covers \Bairwell\MiddlewareCors\Preflight::accessControlRequestHeaders
+     * @uses Bairwell\MiddlewareCors\Exceptions\NoHeadersAllowed
      */
     public function testPreflightAccessControlRequestHeadersNoHeaders()
     {
@@ -431,8 +431,8 @@ class PreflightTest extends \PHPUnit_Framework_TestCase
      * Specific test to ensure PreflightAccessControlRequestHeaders returns empty arrays.
      *
      * @test
-     * @covers \Bairwell\Cors\Preflight::accessControlRequestHeaders
-     * @uses Bairwell\Cors\Exceptions\HeaderNotAllowed
+     * @covers \Bairwell\MiddlewareCors\Preflight::accessControlRequestHeaders
+     * @uses Bairwell\MiddlewareCors\Exceptions\HeaderNotAllowed
      */
     public function testPreflightAccessControlRequestHeadersInvalidHeaders()
     {
