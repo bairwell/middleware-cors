@@ -1,7 +1,7 @@
 <?php
 /**
  * Tests the main CORs system.
- * 
+ *
  * Part of the Bairwell\MiddlewareCors package.
  *
  * (c) Richard Bairwell <richard@bairwell.com>
@@ -193,6 +193,47 @@ class MiddlewareCorsTest extends \PHPUnit_Framework_TestCase
 
     }//end testInvokerWithOriginHeader()
 
+    /**
+     * Runs a test based on this having:
+     * - Method: GET
+     * - * allowed origin (default)
+     * - Origin set to example.com (matching wildcard)
+     * should get
+     * Access-Control-Allow-Origin
+     * and next called.
+     *
+     * @test
+     * @covers \Bairwell\MiddlewareCors::__construct
+     * @covers \Bairwell\MiddlewareCors::__invoke
+     * @covers \Bairwell\MiddlewareCors\Traits\Parse::parseOriginMatch
+     * @covers \Bairwell\MiddlewareCors\Traits\Parse::parseOrigin
+     */
+    public function testInvokerWithFullyQualifiedOriginHeader()
+    {
+        $results  = $this->runInvoke(
+            [
+                'method'        => 'GET',
+                'setHeaders'    => ['origin' => 'http://example.com:83/text.html'],
+                'configuration' => []
+            ]
+        );
+        $expected = ['withHeader:Access-Control-Allow-Origin' => '*', 'calledNext' => 'called'];
+        $this->arraysAreSimilar($results, $expected);
+        // check logs
+        $expectedLogs=[
+            'Request has an origin setting and is being treated like a CORs request',
+            'Processing origin of "http://example.com:83/text.html"',
+            'Parsed a hostname from origin: example.com',
+            'Attempting to match origin as string',
+            'Checking configuration origin of "*" against user "example.com"',
+            'Origin is either an empty string or wildcarded star. Returning *',
+            'Processing with origin of "*"',
+            'Calling next bit of middleware'
+        ];
+        $logEntries=$this->getLoggerStrings();
+        $this->assertEquals($expectedLogs,$logEntries);
+
+    }//end testInvokerWithOriginHeader()
     /**
      * Runs a test based on this having:
      * - Method: GET

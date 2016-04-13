@@ -1,3 +1,5 @@
+v0.3.0 - 13th Apr 2016
+         Added handling of origins which are fully qualified ( such as http://example.com/ instead of just hostname)
 v0.2.0 - 5th Jan 2016
          Renamed from Bairwell/Cors to Bairwell/MiddlewareCors (packagist name Bairwell\Middleware-Cors)
          Remove Slim dependency from dev (moved to examples) (fixes https://github.com/bairwell/middleware-cors/issues/2 )
