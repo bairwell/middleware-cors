@@ -171,6 +171,12 @@ trait Parse
         $this->addLog('Processing origin of "'.$origin.'"');
         // lowercase the user provided origin for comparison purposes.
         $origin = strtolower($origin);
+        $parsed = parse_url($origin);
+        if (true === is_array($parsed) && true === isset($parsed['host'])) {
+            $this->addLog('Parsed a hostname from origin: '.$parsed['host']);
+            $origin = $parsed['host'];
+        }
+
         // read the current origin setting
         $originSetting = $this->settings['origin'];
 
