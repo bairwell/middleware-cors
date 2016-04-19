@@ -235,7 +235,7 @@ trait RunInvokeArrays
                     $msg .= ' "'.$b[$k].'"';
                 }
 
-                $this->assertSame($v, $b[$k], $msg);
+                $this->assertSame($v, $b[$k], 'Comparing arrays:'.$msg);
             }
         }//end foreach
     }//end arraysAreSimilar()

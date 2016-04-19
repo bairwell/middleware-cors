@@ -170,11 +170,24 @@ trait Parse
 
         $this->addLog('Processing origin of "'.$origin.'"');
         // lowercase the user provided origin for comparison purposes.
-        $origin = strtolower($origin);
-        $parsed = parse_url($origin);
-        if (true === is_array($parsed) && true === isset($parsed['host'])) {
-            $this->addLog('Parsed a hostname from origin: '.$parsed['host']);
-            $origin = $parsed['host'];
+        $origin   = strtolower($origin);
+        $parsed   = parse_url($origin);
+        $protocol = '';
+        if (true === is_array($parsed)) {
+            if (true === isset($parsed['host'])) {
+                $this->addLog('Parsed a hostname from origin: '.$parsed['host']);
+                $origin = $parsed['host'];
+            } else {
+                $this->addLog('Unable to parse hostname from origin');
+            }
+            if (true === isset($parsed['scheme'])) {
+                $this->addLog('Parsed a protocol from origin: '.$parsed['scheme']);
+                $protocol = $parsed['scheme'].'://';
+            } else {
+                $this->addLog('Unable to parse protocol/scheme from origin');
+            }
+        } else {
+            $this->addLog('Unable to parse URL from origin of '.$origin);
         }
 
         // read the current origin setting
@@ -200,6 +213,7 @@ trait Parse
                 // if anything else but '' was returned, then we have a valid match.
                 if ('' !== $matched) {
                     $this->addLog('Iterator found a matched origin of '.$matched);
+                    $matched = $this->addProtocolIfNeeded($protocol, $matched);
                     return $matched;
                 }
             }
@@ -213,8 +227,27 @@ trait Parse
         }
 
         // return the matched setting (may be '' to indicate nothing matched)
+        $matched = $this->addProtocolIfNeeded($protocol, $matched);
         return $matched;
     }//end parseOrigin()
+
+    /**
+     * Returns the protocol if needed.
+     *
+     * @param string $protocol Protocol to add if matched is not empty or *.
+     * @param string $matched  The matched host.
+     *
+     * @return string
+     */
+    protected function addProtocolIfNeeded(string $protocol, string $matched) : string
+    {
+        if ('' === $matched || '*' === $matched) {
+            $return = $matched;
+        } else {
+            $return = $protocol.$matched;
+        }
+        return $return;
+    }//end addProtocolIfNeeded()
 
     /**
      * Check to see if an origin string matches an item (wildcarded or not).
