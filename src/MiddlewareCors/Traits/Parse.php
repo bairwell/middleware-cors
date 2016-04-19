@@ -173,13 +173,21 @@ trait Parse
         $origin = strtolower($origin);
         $parsed = parse_url($origin);
         $protocol='';
-        if (true === is_array($parsed) && true === isset($parsed['host'])) {
-            $this->addLog('Parsed a hostname from origin: '.$parsed['host']);
-            $origin = $parsed['host'];
-        }
-        if (true===is_array($parsed) && true===isset($parsed['scheme'])) {
-            $this->addLog('Parsed a protocol from origin: '.$parsed['scheme']);
-            $protocol=$parsed['scheme'].'://';
+        if (true === is_array($parsed)) {
+            if (true === isset($parsed['host'])) {
+                $this->addLog('Parsed a hostname from origin: '.$parsed['host']);
+                $origin = $parsed['host'];
+            } else {
+                $this->addLog('Unable to parse hostname from origin');
+            }
+            if (true===isset($parsed['scheme'])) {
+                $this->addLog('Parsed a protocol from origin: '.$parsed['scheme']);
+                $protocol=$parsed['scheme'].'://';
+            } else {
+                $this->addLog('Unable to parse protocol/scheme from origin');
+            }
+        } else {
+            $this->addLog('Unable to parse URL from origin of '.$origin);
         }
 
         // read the current origin setting
@@ -205,7 +213,11 @@ trait Parse
                 // if anything else but '' was returned, then we have a valid match.
                 if ('' !== $matched) {
                     $this->addLog('Iterator found a matched origin of '.$matched);
-                    return $protocol.$matched;
+                    if ('*'===$matched) {
+                        return $matched;
+                    } else {
+                        return $protocol.$matched;
+                    }
                 }
             }
         }
@@ -220,6 +232,8 @@ trait Parse
         // return the matched setting (may be '' to indicate nothing matched)
         if (''===$matched) {
             return '';
+        } elseif ('*'===$matched) {
+            return $matched;
         } else {
             return $protocol.$matched;
         }
