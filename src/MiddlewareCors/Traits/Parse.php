@@ -172,9 +172,14 @@ trait Parse
         // lowercase the user provided origin for comparison purposes.
         $origin = strtolower($origin);
         $parsed = parse_url($origin);
+        $protocol='';
         if (true === is_array($parsed) && true === isset($parsed['host'])) {
             $this->addLog('Parsed a hostname from origin: '.$parsed['host']);
             $origin = $parsed['host'];
+        }
+        if (true===is_array($parsed) && true===isset($parsed['scheme'])) {
+            $this->addLog('Parsed a protocol from origin: '.$parsed['scheme']);
+            $protocol=$parsed['scheme'].'://';
         }
 
         // read the current origin setting
@@ -200,7 +205,7 @@ trait Parse
                 // if anything else but '' was returned, then we have a valid match.
                 if ('' !== $matched) {
                     $this->addLog('Iterator found a matched origin of '.$matched);
-                    return $matched;
+                    return $protocol.$matched;
                 }
             }
         }
@@ -213,7 +218,11 @@ trait Parse
         }
 
         // return the matched setting (may be '' to indicate nothing matched)
-        return $matched;
+        if (''===$matched) {
+            return '';
+        } else {
+            return $protocol.$matched;
+        }
     }//end parseOrigin()
 
     /**
