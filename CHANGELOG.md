@@ -1,3 +1,5 @@
+v0.3.6 - 20th Apr 2016
+         Add handling of origin port to reply if sent.
 v0.3.5 - 19th Apr 2016
          Add handling of origin protocol scheme to reply if sent.
 v0.3.0 - 13th Apr 2016
