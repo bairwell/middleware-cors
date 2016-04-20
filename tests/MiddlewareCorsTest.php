@@ -176,14 +176,12 @@ class MiddlewareCorsTest extends \PHPUnit_Framework_TestCase
                 'configuration' => []
             ]
         );
-        $expected = ['withHeader:Access-Control-Allow-Origin' => '*', 'calledNext' => 'called'];
-        $this->arraysAreSimilar($results, $expected);
         // check logs
+
         $expectedLogs=[
             'Request has an origin setting and is being treated like a CORs request',
             'Processing origin of "http://example.com"',
             'Parsed a hostname from origin: example.com',
-            'Parsed a protocol from origin: http',
             'Attempting to match origin as string',
             'Checking configuration origin of "*" against user "example.com"',
             'Origin is either an empty string or wildcarded star. Returning *',
@@ -192,7 +190,9 @@ class MiddlewareCorsTest extends \PHPUnit_Framework_TestCase
         ];
         $logEntries=$this->getLoggerStrings();
         $this->assertEquals($expectedLogs,$logEntries);
-
+        // check output
+        $expected = ['withHeader:Access-Control-Allow-Origin' => '*', 'calledNext' => 'called'];
+        $this->arraysAreSimilar($results, $expected);
     }//end testInvokerWithOriginHeader()
 
     /**
@@ -226,7 +226,6 @@ class MiddlewareCorsTest extends \PHPUnit_Framework_TestCase
             'Request has an origin setting and is being treated like a CORs request',
             'Processing origin of "http://example.com:83/text.html"',
             'Parsed a hostname from origin: example.com',
-            'Parsed a protocol from origin: http',
             'Attempting to match origin as string',
             'Checking configuration origin of "*" against user "example.com"',
             'Origin is either an empty string or wildcarded star. Returning *',
@@ -261,24 +260,111 @@ class MiddlewareCorsTest extends \PHPUnit_Framework_TestCase
                 'configuration' => ['origin' => 'example.com']
             ]
         );
-        $expected = ['withHeader:Access-Control-Allow-Origin' => 'https://example.com', 'calledNext' => 'called'];
+        $expected = ['withHeader:Access-Control-Allow-Origin' => 'https://example.com:83', 'calledNext' => 'called'];
         $this->arraysAreSimilar($results, $expected);
         // check logs
         $expectedLogs=[
             'Request has an origin setting and is being treated like a CORs request',
             'Processing origin of "https://example.com:83/text.html"',
             'Parsed a hostname from origin: example.com',
-            'Parsed a protocol from origin: https',
             'Attempting to match origin as string',
             'Checking configuration origin of "example.com" against user "example.com"',
             'Origin is an exact case insensitive match',
-            'Processing with origin of "https://example.com"',
+            'Parsed a protocol from origin: https',
+            'Parsed a port from origin: 83',
+            'Processing with origin of "https://example.com:83"',
             'Calling next bit of middleware'
         ];
         $logEntries=$this->getLoggerStrings();
         $this->assertEquals($expectedLogs,$logEntries);
 
     }//end testInvokerWithOriginHeaderAndProtocol()
+    /**
+     * Runs a test based on this having:
+     * - Method: GET
+     * - * allowed origin (default)
+     * - Origin set to example.com (matching wildcard)
+     * should get
+     * Access-Control-Allow-Origin
+     * and next called.
+     *
+     * @test
+     * @covers \Bairwell\MiddlewareCors::__construct
+     * @covers \Bairwell\MiddlewareCors::__invoke
+     * @covers \Bairwell\MiddlewareCors\Traits\Parse::parseOriginMatch
+     * @covers \Bairwell\MiddlewareCors\Traits\Parse::parseOrigin
+     */
+    public function testInvokerWithFullyQualifiedOriginHeaderAndProtocolStandardPort()
+    {
+        $results  = $this->runInvoke(
+            [
+                'method'        => 'GET',
+                'setHeaders'    => ['origin' => 'https://example.com:443/text.html'],
+                'configuration' => ['origin' => 'example.com']
+            ]
+        );
+        $expected = ['withHeader:Access-Control-Allow-Origin' => 'https://example.com', 'calledNext' => 'called'];
+        $this->arraysAreSimilar($results, $expected);
+        // check logs
+        $expectedLogs=[
+            'Request has an origin setting and is being treated like a CORs request',
+            'Processing origin of "https://example.com:443/text.html"',
+            'Parsed a hostname from origin: example.com',
+            'Attempting to match origin as string',
+            'Checking configuration origin of "example.com" against user "example.com"',
+            'Origin is an exact case insensitive match',
+            'Parsed a protocol from origin: https',
+            'Parsed a port from origin: 443',
+            'Processing with origin of "https://example.com"',
+            'Calling next bit of middleware'
+        ];
+        $logEntries=$this->getLoggerStrings();
+        $this->assertEquals($expectedLogs,$logEntries);
+
+    }//end testInvokerWithOriginHeaderAndProtocolStandardPort()
+    /**
+     * Runs a test based on this having:
+     * - Method: GET
+     * - * allowed origin (default)
+     * - Origin set to example.com (matching wildcard)
+     * should get
+     * Access-Control-Allow-Origin
+     * and next called.
+     *
+     * @test
+     * @covers \Bairwell\MiddlewareCors::__construct
+     * @covers \Bairwell\MiddlewareCors::__invoke
+     * @covers \Bairwell\MiddlewareCors\Traits\Parse::parseOriginMatch
+     * @covers \Bairwell\MiddlewareCors\Traits\Parse::parseOrigin
+     */
+    public function testInvokerWithFullyQualifiedOriginHeaderAndProtocolNoPort()
+    {
+        $results  = $this->runInvoke(
+            [
+                'method'        => 'GET',
+                'setHeaders'    => ['origin' => 'https://testing.com/text.html'],
+                'configuration' => ['origin' => 'testing.com']
+            ]
+        );
+        $expected = ['withHeader:Access-Control-Allow-Origin' => 'https://testing.com', 'calledNext' => 'called'];
+        $this->arraysAreSimilar($results, $expected);
+        // check logs
+        $expectedLogs=[
+            'Request has an origin setting and is being treated like a CORs request',
+            'Processing origin of "https://testing.com/text.html"',
+            'Parsed a hostname from origin: testing.com',
+            'Attempting to match origin as string',
+            'Checking configuration origin of "testing.com" against user "testing.com"',
+            'Origin is an exact case insensitive match',
+            'Parsed a protocol from origin: https',
+            'Unable to parse port from origin',
+            'Processing with origin of "https://testing.com"',
+            'Calling next bit of middleware'
+        ];
+        $logEntries=$this->getLoggerStrings();
+        $this->assertEquals($expectedLogs,$logEntries);
+
+    }//end testInvokerWithOriginHeaderAndProtocolNoPort()
     /**
      * Runs a test based on this having:
      * - Method: GET
@@ -303,22 +389,25 @@ class MiddlewareCorsTest extends \PHPUnit_Framework_TestCase
                 'configuration' => ['origin' => 'example.com']
             ]
         );
-        $expected = ['withHeader:Access-Control-Allow-Origin' => 'http://example.com', 'calledNext' => 'called'];
-        $this->arraysAreSimilar($results, $expected);
+
         // check logs
         $expectedLogs=[
             'Request has an origin setting and is being treated like a CORs request',
             'Processing origin of "http://example.com"',
             'Parsed a hostname from origin: example.com',
-            'Parsed a protocol from origin: http',
             'Attempting to match origin as string',
             'Checking configuration origin of "example.com" against user "example.com"',
             'Origin is an exact case insensitive match',
+            'Parsed a protocol from origin: http',
+            'Unable to parse port from origin',
             'Processing with origin of "http://example.com"',
             'Calling next bit of middleware'
         ];
         $logEntries=$this->getLoggerStrings();
         $this->assertEquals($expectedLogs,$logEntries);
+        //
+        $expected = ['withHeader:Access-Control-Allow-Origin' => 'http://example.com', 'calledNext' => 'called'];
+        $this->arraysAreSimilar($results, $expected);
     }//end testInvokerWithCustomOriginHeader()
 
     /**
@@ -356,8 +445,6 @@ class MiddlewareCorsTest extends \PHPUnit_Framework_TestCase
         $expectedLogs=[
             'Request has an origin setting and is being treated like a CORs request',
             'Processing origin of "dummy.com"',
-            'Unable to parse hostname from origin',
-            'Unable to parse protocol/scheme from origin',
             'Attempting to match origin as string',
             'Checking configuration origin of "example.com" against user "dummy.com"',
             'Unable to match "example.com" against user "dummy.com"'
@@ -432,8 +519,6 @@ class MiddlewareCorsTest extends \PHPUnit_Framework_TestCase
         $expectedLogs=[
             'Request has an origin setting and is being treated like a CORs request',
             'Processing origin of "dummy.com"',
-            'Unable to parse hostname from origin',
-            'Unable to parse protocol/scheme from origin',
             'Attempting to match origin as string',
             'Checking configuration origin of "example.com" against user "dummy.com"',
             'Unable to match "example.com" against user "dummy.com"'
@@ -479,8 +564,6 @@ class MiddlewareCorsTest extends \PHPUnit_Framework_TestCase
         $expectedLogs=[
             'Request has an origin setting and is being treated like a CORs request',
             'Processing origin of "dummy.com"',
-            'Unable to parse hostname from origin',
-            'Unable to parse protocol/scheme from origin',
             'Origin server request is being passed to callback',
             'Attempting to match origin as string',
             'Checking configuration origin of "hello" against user "dummy.com"',
@@ -517,19 +600,19 @@ class MiddlewareCorsTest extends \PHPUnit_Framework_TestCase
                 'configuration' => ['origin' => $originCallback]
             ]
         );
-        $expected = ['withHeader:Access-Control-Allow-Origin' => 'dummy.com', 'calledNext' => 'called'];
+        $expected = ['withHeader:Access-Control-Allow-Origin' => 'https://dummy.com', 'calledNext' => 'called'];
         $this->arraysAreSimilar($results, $expected);
         // check logs
         $expectedLogs=[
             'Request has an origin setting and is being treated like a CORs request',
             'Processing origin of "dummy.com"',
-            'Unable to parse hostname from origin',
-            'Unable to parse protocol/scheme from origin',
             'Origin server request is being passed to callback',
             'Attempting to match origin as string',
             'Checking configuration origin of "dummy.com" against user "dummy.com"',
             'Origin is an exact case insensitive match',
-            'Processing with origin of "dummy.com"',
+            'Unable to parse protocol/scheme from origin',
+            'Unable to parse port from origin',
+            'Processing with origin of "https://dummy.com"',
             'Calling next bit of middleware'
         ];
         $logEntries=$this->getLoggerStrings();
@@ -560,21 +643,21 @@ class MiddlewareCorsTest extends \PHPUnit_Framework_TestCase
                 'configuration' => ['origin' => ['example.com', 'dummy.com']]
             ]
         );
-        $expected = ['withHeader:Access-Control-Allow-Origin' => 'dummy.com', 'calledNext' => 'called'];
+        $expected = ['withHeader:Access-Control-Allow-Origin' => 'https://dummy.com', 'calledNext' => 'called'];
         $this->arraysAreSimilar($results, $expected);
         // check logs
         $expectedLogs=[
             'Request has an origin setting and is being treated like a CORs request',
             'Processing origin of "dummy.com"',
-            'Unable to parse hostname from origin',
-            'Unable to parse protocol/scheme from origin',
             'Iterating through Origin array',
             'Checking configuration origin of "example.com" against user "dummy.com"',
             'Unable to match "example.com" against user "dummy.com"',
             'Checking configuration origin of "dummy.com" against user "dummy.com"',
             'Origin is an exact case insensitive match',
             'Iterator found a matched origin of dummy.com',
-            'Processing with origin of "dummy.com"',
+            'Unable to parse protocol/scheme from origin',
+            'Unable to parse port from origin',
+            'Processing with origin of "https://dummy.com"',
             'Calling next bit of middleware'
             ];
         $logEntries=$this->getLoggerStrings();
@@ -605,21 +688,21 @@ class MiddlewareCorsTest extends \PHPUnit_Framework_TestCase
                 'configuration' => ['origin' => ['example.com', '*.dummy.com']]
             ]
         );
-        $expected = ['withHeader:Access-Control-Allow-Origin' => 'www.dummy.com', 'calledNext' => 'called'];
+        $expected = ['withHeader:Access-Control-Allow-Origin' => 'https://www.dummy.com', 'calledNext' => 'called'];
         $this->arraysAreSimilar($results, $expected);
         // check logs
         $expectedLogs=[
             'Request has an origin setting and is being treated like a CORs request',
             'Processing origin of "www.dummy.com"',
-            'Unable to parse hostname from origin',
-            'Unable to parse protocol/scheme from origin',
             'Iterating through Origin array',
             'Checking configuration origin of "example.com" against user "www.dummy.com"',
             'Unable to match "example.com" against user "www.dummy.com"',
             'Checking configuration origin of "*.dummy.com" against user "www.dummy.com"',
             'Wildcarded origin match with www.dummy.com',
             'Iterator found a matched origin of www.dummy.com',
-            'Processing with origin of "www.dummy.com"',
+            'Unable to parse protocol/scheme from origin',
+            'Unable to parse port from origin',
+            'Processing with origin of "https://www.dummy.com"',
             'Calling next bit of middleware'
         ];
         $logEntries=$this->getLoggerStrings();
@@ -661,8 +744,6 @@ class MiddlewareCorsTest extends \PHPUnit_Framework_TestCase
         $expectedLogs=[
             'Request has an origin setting and is being treated like a CORs request',
             'Processing origin of "bbc.co.uk"',
-            'Unable to parse hostname from origin',
-            'Unable to parse protocol/scheme from origin',
             'Iterating through Origin array',
             'Checking configuration origin of "example.com" against user "bbc.co.uk"',
             'Unable to match "example.com" against user "bbc.co.uk"',
@@ -707,8 +788,6 @@ class MiddlewareCorsTest extends \PHPUnit_Framework_TestCase
         $expectedLogs=[
             'Request has an origin setting and is being treated like a CORs request',
             'Processing origin of "example.com"',
-            'Unable to parse hostname from origin',
-            'Unable to parse protocol/scheme from origin',
             'Attempting to match origin as string',
             'Checking configuration origin of "*" against user "example.com"',
             'Origin is either an empty string or wildcarded star. Returning *',
@@ -756,8 +835,6 @@ class MiddlewareCorsTest extends \PHPUnit_Framework_TestCase
         $expectedLogs=[
             'Request has an origin setting and is being treated like a CORs request',
             'Processing origin of "example.com"',
-            'Unable to parse hostname from origin',
-            'Unable to parse protocol/scheme from origin',
             'Attempting to match origin as string',
             'Checking configuration origin of "*" against user "example.com"',
             'Origin is either an empty string or wildcarded star. Returning *',

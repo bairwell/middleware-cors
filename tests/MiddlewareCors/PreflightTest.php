@@ -359,35 +359,35 @@ class PreflightTest extends \PHPUnit_Framework_TestCase
      */
     public function testInvokerPreflightAllTheThings()
     {
-        $results  = $this->runInvoke(
-            [
-                'method'        => 'OPTIONS',
-                'setHeaders'    => [
-                    'origin'                         => 'example.com',
-                    'access-control-request-method'  => 'put',
-                    'access-control-request-headers' => 'x-jeff, x-smith, x-jones'
-                ],
-                'configuration' => [
-                    'allowMethods'     => ['PUT', 'POST'],
-                    'allowHeaders'     => 'x-jeff,x-smith,x-jones',
-                    'maxAge'           => 300,
-                    'allowCredentials' => true,
-                    'origin'           => 'example.com'
+            $results  = $this->runInvoke(
+                [
+                    'method'        => 'OPTIONS',
+                    'setHeaders'    => [
+                        'origin'                         => 'http://example.com',
+                        'access-control-request-method'  => 'put',
+                        'access-control-request-headers' => 'x-jeff, x-smith, x-jones'
+                    ],
+                    'configuration' => [
+                        'allowMethods'     => ['PUT', 'POST'],
+                        'allowHeaders'     => 'x-jeff,x-smith,x-jones',
+                        'maxAge'           => 300,
+                        'allowCredentials' => true,
+                        'origin'           => 'example.com'
+                    ]
                 ]
-            ]
-        );
-        $expected = [
-            'withHeader:Access-Control-Allow-Origin'      => 'example.com',
-            'withHeader:Access-Control-Allow-Credentials' => 'true',
-            'withHeader:Access-Control-Allow-Methods'     => 'PUT, POST',
-            'withHeader:Access-Control-Allow-Headers'     => 'x-jeff, x-smith, x-jones',
-            'withHeader:Access-Control-Max-Age'           => 300,
-            'withAddedHeader:Vary'                        => 'Origin',
-            'withStatus'                                  => '204:No Content',
-            'withoutHeader:Content-Type'                  => true,
-            'withoutHeader:Content-Length'                => true
-        ];
-        $this->arraysAreSimilar($expected, $results);
+            );
+            $expected = [
+                'withHeader:Access-Control-Allow-Origin'      => 'http://example.com',
+                'withHeader:Access-Control-Allow-Credentials' => 'true',
+                'withHeader:Access-Control-Allow-Methods'     => 'PUT, POST',
+                'withHeader:Access-Control-Allow-Headers'     => 'x-jeff, x-smith, x-jones',
+                'withHeader:Access-Control-Max-Age'           => 300,
+                'withAddedHeader:Vary'                        => 'Origin',
+                'withStatus'                                  => '204:No Content',
+                'withoutHeader:Content-Type'                  => true,
+                'withoutHeader:Content-Length'                => true
+            ];
+            $this->arraysAreSimilar($expected, $results);
     }//end testInvokerPreflightAllTheThings()
 
     /**
