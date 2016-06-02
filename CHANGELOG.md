@@ -1,3 +1,8 @@
+v0.3.7 - 2nd Jun 2016
+         Add reporting of allowed origins.
+         Add reporting of failed header HeaderNotAllowed.
+         Tweak logs to prepend with "CORs:" and remove mis-formatted additional parameter.
+         Change phpunit.xml to use beStrictAboutCoversAnnotation  instead of checkForUnintentionallyCoveredCode 
 v0.3.6 - 20th Apr 2016
          Add handling of origin port to reply if sent.
 v0.3.5 - 19th Apr 2016

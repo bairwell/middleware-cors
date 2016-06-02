@@ -157,7 +157,7 @@ trait Parse
      *
      * @return string
      */
-    protected function parseOrigin(ServerRequestInterface $request) : string
+    protected function parseOrigin(ServerRequestInterface $request,array &$allowedOrigins=[]) : string
     {
         // read the client provided origin header
         $origin = $request->getHeaderLine('origin');
@@ -198,6 +198,7 @@ trait Parse
         if (true === is_array($originSetting)) {
             $this->addLog('Iterating through Origin array');
             foreach ($originSetting as $item) {
+                $allowedOrigins[]=$item;
                 // see if the origin matches (the parseOriginMatch function supports
                 // wildcards)
                 $matched = $this->parseOriginMatch($item, $originHost);
@@ -214,6 +215,7 @@ trait Parse
         // is to try to match it as a string (if applicable)
         if ('' === $matched && true === is_string($originSetting)) {
             $this->addLog('Attempting to match origin as string');
+            $allowedOrigins[]=$originSetting;
             $matched = $this->parseOriginMatch($originSetting, $originHost);
         }
 

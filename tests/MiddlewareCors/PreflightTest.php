@@ -275,7 +275,7 @@ class PreflightTest extends \PHPUnit_Framework_TestCase
             );
             $this->fail('Should not have got here');
         } catch (HeaderNotAllowed $e) {
-            $this->assertSame('Header not allowed', $e->getMessage());
+            $this->assertSame('Header "x-jones" not allowed', $e->getMessage());
             $this->assertSame(['x-jeff', 'x-smith'], $e->getAllowed());
             $this->assertSame('x-jeff, x-smith, x-jones', $e->getSent());
         }
@@ -459,7 +459,7 @@ class PreflightTest extends \PHPUnit_Framework_TestCase
             // @codingStandardsIgnoreEnd
             $this->fail('Exception expected');
         } catch (HeaderNotAllowed $e) {
-            $this->assertSame('Header not allowed', $e->getMessage());
+            $this->assertSame('Header "x-jones" not allowed', $e->getMessage());
             $this->assertSame(['x-smith'], $e->getAllowed());
             $this->assertSame('x-jones', $e->getSent());
         }

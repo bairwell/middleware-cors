@@ -132,13 +132,14 @@ class MiddlewareCors
      * Add a log string if we have a logger.
      *
      * @param string $string String to log.
+     * @param array $logData Additional data to log.
      *
      * @return bool True if logged, false if no logger.
      */
-    public function addLog(string $string) : bool
+    public function addLog(string $string,array $logData=[]) : bool
     {
         if (null !== $this->logger) {
-            $this->logger->debug($string, ['cors']);
+            $this->logger->debug('CORs: '.$string, $logData);
             return true;
         }
 
@@ -238,11 +239,13 @@ class MiddlewareCors
         // and the credentials field returned (if they are applicable).
         // All other fields are "request specific" (either preflight or not).
         // set the Access-Control-Allow-Origin header. Uses origin configuration setting.
-        $origin = $this->parseOrigin($request);
+        $allowedOrigins=[];
+        $origin = $this->parseOrigin($request,$allowedOrigins);
         // check the origin is one of the allowed ones.
         if ('' === $origin) {
             $exception = new BadOrigin('Bad Origin');
             $exception->setSent($request->getHeaderLine('origin'));
+            $exception->setAllowed($allowedOrigins);
             throw $exception;
         }
 
