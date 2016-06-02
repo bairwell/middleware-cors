@@ -153,11 +153,12 @@ trait Parse
      * Parse the origin setting using wildcards where necessary.
      * Can return * for "all hosts", '' for "no origin/do not allow" or a string/hostname.
      *
-     * @param ServerRequestInterface $request The server request with the origin header.
+     * @param ServerRequestInterface $request        The server request with the origin header.
+     * @param array|callable         $allowedOrigins The returned list of allowed origins found.
      *
      * @return string
      */
-    protected function parseOrigin(ServerRequestInterface $request) : string
+    protected function parseOrigin(ServerRequestInterface $request, array &$allowedOrigins = []) : string
     {
         // read the client provided origin header
         $origin = $request->getHeaderLine('origin');
@@ -198,6 +199,7 @@ trait Parse
         if (true === is_array($originSetting)) {
             $this->addLog('Iterating through Origin array');
             foreach ($originSetting as $item) {
+                $allowedOrigins[] = $item;
                 // see if the origin matches (the parseOriginMatch function supports
                 // wildcards)
                 $matched = $this->parseOriginMatch($item, $originHost);
@@ -214,7 +216,8 @@ trait Parse
         // is to try to match it as a string (if applicable)
         if ('' === $matched && true === is_string($originSetting)) {
             $this->addLog('Attempting to match origin as string');
-            $matched = $this->parseOriginMatch($originSetting, $originHost);
+            $allowedOrigins[] = $originSetting;
+            $matched          = $this->parseOriginMatch($originSetting, $originHost);
         }
 
         // return the matched setting (may be '' to indicate nothing matched)

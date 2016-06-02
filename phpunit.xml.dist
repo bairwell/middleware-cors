@@ -10,7 +10,7 @@
          beStrictAboutTestSize="true"
          beStrictAboutTestsThatDoNotTestAnything="true"
          beStrictAboutTodoAnnotatedTests="true"
-         checkForUnintentionallyCoveredCode="true"
+         beStrictAboutCoversAnnotation="true"
          forceCoversAnnotation="true"
          convertErrorsToExceptions="true"
          convertNoticesToExceptions="true"
