@@ -198,9 +198,9 @@ class Preflight
         // loop through each of their provided headers
         foreach ($requestHeaders as $header) {
             // if we are unable to find a match for the header, block it for security.
-            if (false === in_array($header, $allowedHeaders,true)) {
+            if (false === in_array($header, $allowedHeaders, true)) {
                 // block it
-                $exception = new HeaderNotAllowed(sprintf('Header "%s" not allowed',$header));
+                $exception = new HeaderNotAllowed(sprintf('Header "%s" not allowed', $header));
                 $exception->setAllowed($allowedHeaders)
                     ->setSent($originalRequestHeaders);
                 throw $exception;
