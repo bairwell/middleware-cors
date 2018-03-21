@@ -280,14 +280,14 @@ class MiddlewareCors
             $headers['Access-Control-Expose-Headers'] = $exposeHeaders;
         }
 
+        // return the next bit of middleware
+        $response = $next($request, $response);
+
         foreach ($headers as $k => $v) {
             $response = $response->withHeader($k, $v);
         }
-
         $this->addLog('Calling next bit of middleware');
-        // return the next bit of middleware
-        $next = $next($request, $response);
 
-        return $next;
+        return $response;
     }//end __invoke()
 }//end class
