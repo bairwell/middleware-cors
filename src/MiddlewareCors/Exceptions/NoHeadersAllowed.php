@@ -8,7 +8,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-declare (strict_types = 1);
+declare (strict_types=1);
 
 namespace Bairwell\MiddlewareCors\Exceptions;
 
@@ -19,4 +19,4 @@ namespace Bairwell\MiddlewareCors\Exceptions;
 class NoHeadersAllowed extends ExceptionAbstract
 {
 
-}//end class
+}

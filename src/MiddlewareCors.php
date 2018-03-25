@@ -2,8 +2,8 @@
 /**
  * Class MiddlewareCors.
  *
- * A piece of PSR7 compliant middleware (in that it takes a PSR7 request and response
- * fields, a "next" field and handles them appropriate) which adds appropriate CORS
+ * A piece of PSR-15 compliant middleware (in that it takes a PSR-15 ServerRequestInterface
+ * and RequestHandelerInterface) which adds appropriate CORS
  * (Cross-domain Origin Request System) headers to the response to enable browsers
  * to correctly enforce security.
  *
@@ -14,22 +14,27 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-declare (strict_types = 1);
+declare (strict_types=1);
 
 namespace Bairwell;
 
+use Bairwell\MiddlewareCors\Exceptions\SettingsInvalid;
 use Bairwell\MiddlewareCors\ValidateSettings;
 use Bairwell\MiddlewareCors\Preflight;
+use Bairwell\MiddlewareCors\PreflightInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Bairwell\MiddlewareCors\Exceptions\BadOrigin;
+use Psr\Http\Server\RequestHandlerInterface;
+use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
+use Psr\Http\Server\MiddlewareInterface;
+use Psr\Log\NullLogger;
+use Bairwell\MiddlewareCors\Traits\Parse;
 
 /**
  * Class MiddlewareCors.
  *
- * A piece of PSR7 compliant middleware (in that it takes a PSR7 request and response
- * fields, a "next" field and handles them appropriate) which adds appropriate CORS
+ * A piece of PSR-15 compliant middleware which adds appropriate CORS
  * (Cross-domain Origin Request System) headers to the response to enable browsers
  * to correctly enforce security.
  * Supports https://developer.mozilla.org/en-US/docs/Web/HTTP/Access_control_CORS
@@ -58,124 +63,63 @@ use Psr\Log\LoggerInterface;
  *     - Add Access-Control-Max-Age (optional)
  *     - Add Vary:Origin if Origin is not *
  */
-class MiddlewareCors
+class MiddlewareCors implements MiddlewareInterface, LoggerAwareInterface
 {
 
-    use \Bairwell\MiddlewareCors\Traits\Parse;
-
-    /**
-     * The settings configuration.
-     *
-     * @var array
-     */
-    protected $settings;
-
-    /**
-     * A list of allowed settings and their parameters/types.
-     *
-     * @var array
-     */
-    protected $allowedSettings = [
-        'exposeHeaders'    => ['string', 'array', 'callable'],
-        'allowMethods'     => ['string', 'array', 'callable'],
-        'allowHeaders'     => ['string', 'array', 'callable'],
-        'origin'           => ['string', 'array', 'callable'],
-        'maxAge'           => ['int', 'callable'],
-        'allowCredentials' => ['bool', 'callable']
-    ];
-
-    /**
-     * Settings validator.
-     *
-     * @var ValidateSettings
-     */
-    protected $validateSettings;
+    use Parse;
 
     /**
      * Preflight system.
      *
-     * @var Preflight
+     * @var PreflightInterface
      */
     protected $preflight;
 
     /**
-     * The logger (if we have one set).
-     *
-     * @var LoggerInterface $logger
+     * @var callable
      */
-    protected $logger = null;
+    private $responseFactory;
 
     /**
-     * MiddlewareCors constructor.
-     *
-     * @param array $settings Our list of CORs related settings.
+     * @param callable $responseFactory A factory capable of returning an
+     *     empty ResponseInterface instance to return for implicit OPTIONS
+     *     requests.
+     * @param array $settings Any settings.
+     * @throws SettingsInvalid If the settings are invalid.
      */
-    public function __construct(array $settings = [])
+    public function __construct(callable $responseFactory, array $settings = null)
     {
-        $this->validateSettings = new ValidateSettings();
-        $this->preflight        = new Preflight([$this,'addLog']);
-        $this->settings         = $this->getDefaults();
-        $this->setSettings($settings);
-    }//end __construct()
+        // Factories is wrapped in a closure in order to enforce return type safety.
+        $this->responseFactory = function () use ($responseFactory) : ResponseInterface {
+            return $responseFactory();
+        };
+        $this->logger = new NullLogger();
+        $this->settings = ValidateSettings::getDefaults();
+        if (null !== $settings) {
+            $this->setSettings($settings);
+        }
+    }
+
 
     /**
      * Set the logger.
      *
      * @param LoggerInterface $logger Logger.
      */
-    public function setLogger(LoggerInterface $logger = null)
+    public function setLogger(LoggerInterface $logger)
     {
         $this->logger = $logger;
-    }//end setLogger()
-
-    /**
-     * Add a log string if we have a logger.
-     *
-     * @param string $string  String to log.
-     * @param array  $logData Additional data to log.
-     *
-     * @return bool True if logged, false if no logger.
-     */
-    public function addLog(string $string, array $logData = []) : bool
-    {
-        if (null !== $this->logger) {
-            $this->logger->debug('CORs: '.$string, $logData);
-            return true;
-        }
-
-        return false;
-    }//end addLog()
-
-
-    /**
-     * Get the default settings.
-     *
-     * @return array
-     */
-    public function getDefaults() : array
-    {
-        // our default settings
-        $return = [
-            'origin'           => '*',
-            'exposeHeaders'    => '',
-            'maxAge'           => 0,
-            'allowCredentials' => false,
-            'allowMethods'     => 'GET,HEAD,PUT,POST,DELETE',
-            'allowHeaders'     => '',
-        ];
-
-        return $return;
-    }//end getDefaults()
+    }
 
     /**
      * Get the settings.
      *
      * @return array
      */
-    public function getSettings() : array
+    public function getSettings(): array
     {
         return $this->settings;
-    }//end getSettings()
+    }
 
     /**
      * Set the settings.
@@ -183,80 +127,61 @@ class MiddlewareCors
      * @param array $settings The new settings to be merged in.
      *
      * @return self
+     *
+     * @throws SettingsInvalid If settings are invalid.
      */
-    public function setSettings(array $settings = []) : self
+    public function setSettings(array $settings = []): self
     {
         $this->settings = array_merge($this->settings, $settings);
-        // loop through checking each setting
-        foreach ($this->allowedSettings as $name => $allowed) {
-            $this->validateSettings->__invoke($name, $this->settings[$name], $allowed);
-        }
+        ValidateSettings::validate($this->settings);
 
         return $this;
-    }//end setSettings()
+    }
+
 
     /**
-     * Get the allowed settings.
+     * Process an incoming server request (PS15).
      *
-     * @return array
+     * Processes an incoming server request in order to produce a response.
+     * If unable to produce the response itself, it may delegate to the provided
+     * request handler to do so.
+     *
+     * @param ServerRequestInterface $request PS15 request object.
+     * @param RequestHandlerInterface $handler PS15 response handling object.
+     * @return ResponseInterface
+     *
+     * @throws \InvalidArgumentException If unable to parse details.
      */
-    public function getAllowedSettings() : array
+    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        return $this->allowedSettings;
-    }//end getAllowedSettings()
 
-    /**
-     * Invoke middleware.
-     *
-     * The __invoke call is used to allow this class to be called as a function.
-     * PSR7 middleware should work like this.
-     *
-     * @param ServerRequestInterface $request  PSR7 request object.
-     * @param ResponseInterface      $response PSR7 response object.
-     * @param callable               $next     Next middleware callable.
-     *
-     * @throws BadOrigin If the Origin is not set correctly.
-     * @return ResponseInterface PSR7 response object
-     */
-    public function __invoke(
-        ServerRequestInterface $request,
-        ResponseInterface $response,
-        callable $next
-    ) : ResponseInterface
-    {
         // if there is no origin header set, then this isn't a CORs related
         // call and we should therefore return.
         if ('' === $request->getHeaderLine('origin')) {
-            $this->addLog('Request does not have an origin setting');
-            // return the next bit of middleware
-            $next = $next($request, $response);
-
-            return $next;
+            $this->logger->debug('Request does not have an origin setting');
+            return $handler->handle($request);
         }
 
-        $this->addLog('Request has an origin setting and is being treated like a CORs request');
+        $this->logger->debug('Request has an origin setting and is being treated like a CORs request');
         // All CORs related requests should have the origin field
         // and the credentials field returned (if they are applicable).
         // All other fields are "request specific" (either preflight or not).
         // set the Access-Control-Allow-Origin header. Uses origin configuration setting.
         $allowedOrigins = [];
-        $origin         = $this->parseOrigin($request, $allowedOrigins);
+        $origin = $this->parseOrigin($request, $allowedOrigins);
         // check the origin is one of the allowed ones.
         if ('' === $origin) {
-            $exception = new BadOrigin('Bad Origin');
-            $exception->setSent($request->getHeaderLine('origin'));
-            $exception->setAllowed($allowedOrigins);
-            throw $exception;
+            \call_user_func($this->settings['badOriginCallable'], $request, $allowedOrigins);
         }
 
-        $this->addLog('Processing with origin of "'.$origin.'"');
+        $this->logger->debug('Processing with origin of "' . $origin . '"');
         $headers = [];
         $headers['Access-Control-Allow-Origin'] = $origin;
         // sets the Access-Control-Allow-Credentials header if allowCredentials configuration setting is true.
         $allow = $this->parseAllowCredentials($request);
         // if allowCredentials isn't exactly true, we won't allow the header to be set
         if (true === $allow) {
-            $this->addLog('Adding Access-Control-Allow-Credentials header');
+            $this->logger->debug('Adding Access-Control-Allow-Credentials header');
             // set the header if true, omit if not
             $headers['Access-Control-Allow-Credentials'] = 'true';
         }
@@ -265,29 +190,35 @@ class MiddlewareCors
         // An "OPTIONS" request is a "Preflight" request and we should
         // add all our appropriate headers.
         if ('OPTIONS' === strtoupper($request->getMethod())) {
-            $this->addLog('Preflighting');
-            $return = $this->preflight->__invoke($this->settings, $request, $response, $headers, $origin);
-            $this->addLog('Returning from preflight');
+            $this->logger->debug('Preflighting');
+            if (null === $this->preflight) {
+                $this->preflight = new Preflight($this->responseFactory);
+                $this->preflight->setLogger($this->logger);
+            }
+            $this->preflight->setSettings($this->settings)
+                ->setOrigin($origin)
+                ->setHeaders($headers);
+            $return = $this->preflight->handle($request);
+            $this->logger->debug('Returning from preflight');
             return $return;
         }
 
         // if it was a non-OPTIONs request, just
         // set the Access-Control-Expose-Headers header. Uses exposeHeaders configuration setting
-        $exposeHeaders = $this->parseItem('exposeHeaders', $request, false);
+        $exposeHeaders = $this->parseItem('exposeHeaders', $request);
         // this header should only be set if there is an appropriate configuration setting
         if ('' !== $exposeHeaders) {
-            $this->addLog('Adding Access-Control-Expose-Header header');
+            $this->logger->debug('Adding Access-Control-Expose-Header header');
             $headers['Access-Control-Expose-Headers'] = $exposeHeaders;
         }
 
+        // process the request.
+        $response = $handler->handle($request);
+        // add the headers.
         foreach ($headers as $k => $v) {
             $response = $response->withHeader($k, $v);
         }
 
-        $this->addLog('Calling next bit of middleware');
-        // return the next bit of middleware
-        $next = $next($request, $response);
-
-        return $next;
-    }//end __invoke()
-}//end class
+        return $response;
+    }
+}

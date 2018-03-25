@@ -7,13 +7,15 @@
 [![Build Status](https://travis-ci.org/bairwell/middleware-cors.svg?branch=master)](https://travis-ci.org/bairwell/middleware-cors)
 [![Total Downloads](https://poser.pugx.org/bairwell/middleware-cors/downloads)](https://packagist.org/packages/bairwell/middleware-cors)
 
+CURRENTLY UNSTABLE - BEING MADE PSR-15 COMPATIBLE
+
 This is a PHP 7 [Composer](https://getcomposer.org/) compatible library for providing a [PSR-7]((http://www.php-fig.org/psr/psr-7/) compatible middleware layer for handling
 "[CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/Access_control_CORS)" (Cross Origin Request Security/Cross-Origin Http Request/HTTP access control) headers and security.
 
 ## What does this library provides over other CORs libraries?
 
 * PHP-7 type declarations.
-* Works as a piece of [PSR-7](http://www.php-fig.org/psr/psr-7/) middleware making it compatible with many frameworks (such as [Slim 3](http://slimframework.com) and [Symfony](http://symfony.com/blog/psr-7-support-in-symfony-is-here))
+* Works as a piece of  [PSR-15](http://www.php-fig.org/psr/psr-15/) and [PSR-7](http://www.php-fig.org/psr/psr-7/) middleware making it compatible with many frameworks (such as [Zend Expressive](https://docs.zendframework.com/zend-expressive/))
 * Massively flexibility over configuration settings (most can be strings, arrays or callbacks).
 * Follows the [CORs flowchart](http://www.html5rocks.com/static/images/cors_server_flowchart.png) and actively rejects invalid requests.
 * Only sends the appropriate headers when necessary.
@@ -24,7 +26,7 @@ This is a PHP 7 [Composer](https://getcomposer.org/) compatible library for prov
 * Licensed under the [MIT License](https://opensource.org/licenses/MIT) allowing you to practically do whatever you want.
 * Uses namespaces and is 100% object orientated.
 * Blocks invalid settings.
-* Minimal third party requirements (just the definition files "[psr/http-message](https://github.com/php-fig/http-message)" and "[psr/log](https://github.com/php-fig/log)" as interface definitions, and [PHPUnit](https://phpunit.de/), [PHPCodeSniffer](http://www.squizlabs.com/php-codesniffer), and [Monolog](https://github.com/Seldaek/monolog) for development/testing).
+* Minimal third party requirements (just the definition files "[psr/http-message](https://github.com/php-fig/http-message)" and "[psr/log](https://github.com/php-fig/log)" as interface definitions, and [PHPUnit](https://phpunit.de/), [PHPCodeSniffer](http://www.squizlabs.com/php-codesniffer) for development/testing).
 
 # Installation
 Install the latest version with Composer via:

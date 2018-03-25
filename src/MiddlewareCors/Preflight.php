@@ -11,62 +11,113 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-declare (strict_types = 1);
+declare (strict_types=1);
 
 namespace Bairwell\MiddlewareCors;
 
+use Bairwell\MiddlewareCors\Exceptions\SettingsInvalid;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Bairwell\MiddlewareCors\Exceptions\NoMethod;
 use Bairwell\MiddlewareCors\Exceptions\MethodNotAllowed;
 use Bairwell\MiddlewareCors\Exceptions\NoHeadersAllowed;
 use Bairwell\MiddlewareCors\Exceptions\HeaderNotAllowed;
+use Psr\Http\Server\RequestHandlerInterface;
+use Psr\Log\LoggerInterface;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\NullLogger;
 
 /**
  * Preflight.
  * All the CORs orientated preflight code.
  */
-class Preflight
+class Preflight implements LoggerAwareInterface, RequestHandlerInterface, PreflightInterface
 {
     use Traits\Parse;
 
     /**
-     * The settings configuration.
-     *
-     * @var array
+     * @var \Closure $responseFactory A factory capable of returning an
+     *     empty ResponseInterface instance to return for implicit OPTIONS
+     *     requests.
      */
-    protected $settings;
+    protected $responseFactory;
 
     /**
-     * Callable logger.
-     *
-     * @var callable
+     * @var array Headers.
      */
-    protected $logger;
+    protected $headers = [];
 
     /**
-     * Preflight constructor.
-     *
-     * @param callable $logger A callable logger system.
+     * Origin
+     * @var string
      */
-    public function __construct(callable $logger)
+    protected $origin;
+
+    /**
+     * @param callable $responseFactory A factory capable of returning an
+     *     empty ResponseInterface instance to return for implicit OPTIONS
+     *     requests.
+     */
+    public function __construct(callable $responseFactory)
+    {
+        // Factories is wrapped in a closure in order to enforce return type safety.
+        $this->responseFactory = function () use ($responseFactory) : ResponseInterface {
+            return $responseFactory();
+        };
+        $this->logger = new NullLogger();
+        $this->settings = ValidateSettings::getDefaults();
+        $this->origin = '*';
+        $this->headers = [];
+    }
+
+    /**
+     * Set the headers.
+     *
+     * @param array $headers
+     * @return PreflightInterface
+     */
+    public function setHeaders(array $headers): PreflightInterface
+    {
+        $this->headers = $headers;
+        return $this;
+    }
+
+    /**
+     * Set the logger.
+     *
+     * @param LoggerInterface $logger Logger.
+     * @return PreflightInterface
+     */
+    public function setLogger(LoggerInterface $logger): PreflightInterface
     {
         $this->logger = $logger;
-    }//end __construct()
-
+        return $this;
+    }
 
     /**
-     * Add a log string if we have a logger.
+     * Set the origin domain.
      *
-     * @param string $string String to log.
-     *
-     * @return bool True if logged, false if no logger.
+     * @param string $origin
+     * @return PreflightInterface
      */
-    final protected function addLog(string $string) : bool
+    public function setOrigin(string $origin): PreflightInterface
     {
-        $return = call_user_func($this->logger, $string);
-        return $return;
-    }//end addLog()
+        $this->origin = $origin;
+        return $this;
+    }
+
+    /**
+     * Set the settings.
+     * @param array $settings
+     * @return PreflightInterface
+     * @throws SettingsInvalid If the settings are invalid.
+     */
+    public function setSettings(array $settings): PreflightInterface
+    {
+        $this->settings = array_merge($this->settings, $settings);
+        ValidateSettings::validate($settings);
+        return $this;
+    }
 
     /**
      * Handle the preflight requests for the access control headers.
@@ -82,23 +133,21 @@ class Preflight
      *   header Access-Control-Allow-Methods and return the response object (which should not have
      *   been modified).
      *
-     * @param ServerRequestInterface $request  The server request information.
-     * @param ResponseInterface      $response The response handler (should be filled in at end or on error).
-     * @param array                  $headers  The headers we have already created.
+     * @param ServerRequestInterface $request The server request information.
+     * @param array $headers The headers we have already created.
      *
      * @throws \DomainException If there are no configured allowed methods.
      * @throws NoMethod If no method was provided by the user.
      * @throws MethodNotAllowed If the method provided by the user is not allowed.
-     * @return ResponseInterface
+     * @throws \InvalidArgumentException If dependent details are incorrect.
+     * @return array Headers
      */
     final protected function accessControlAllowMethods(
         ServerRequestInterface $request,
-        ResponseInterface $response,
-        array &$headers
-    ) : ResponseInterface
-    {
+        array $headers
+    ): array {
         // check the allow methods
-        $allowMethods = $this->parseItem('allowMethods', $request, false);
+        $allowMethods = $this->parseItem('allowMethods', $request);
         if ('' === $allowMethods) {
             // if no methods are allowed, error
             $exception = new \DomainException('No methods configured to be allowed for request');
@@ -106,7 +155,7 @@ class Preflight
         }
 
         // explode the allowed methods to trimmed arrays
-        $methods = array_map('trim', explode(',', strtoupper((string) $allowMethods)));
+        $methods = array_map('trim', explode(',', strtoupper($allowMethods)));
 
         // check they have provided a method
         if ('' === $request->getHeaderLine('access-control-request-method')) {
@@ -119,7 +168,7 @@ class Preflight
         $requestedMethod = strtoupper($request->getHeaderLine('access-control-request-method'));
         // can we find the requested method (we are presuming they are only supplying one as per
         // the CORS specification) in our list of headers.
-        if (false === in_array($requestedMethod, $methods)) {
+        if (false === \in_array($requestedMethod, $methods, true)) {
             // no match, throw it.
             $exception = new MethodNotAllowed('Method not allowed');
             $exception->setSent($requestedMethod)
@@ -132,8 +181,8 @@ class Preflight
         $headers['Access-Control-Allow-Methods'] = $allowMethods;
 
         // return the response object
-        return $response;
-    }//end accessControlAllowMethods()
+        return $headers;
+    }
 
     /**
      * Handle the preflight requests for the access control headers.
@@ -156,30 +205,28 @@ class Preflight
      *   headers than requested), then add the complete list to the Access-Control-Allow-Headers
      *   header and return the response (which should not have been modified).
      *
-     * @param ServerRequestInterface $request  The server request information.
-     * @param ResponseInterface      $response The response handler (should be filled in at end or on error).
-     * @param array                  $headers  The headers we have already created.
+     * @param ServerRequestInterface $request The server request information.
+     * @param array $headers The headers we have already created.
+     * @return array New headers.
      *
      * @throws NoHeadersAllowed If headers are not allowed.
      * @throws HeaderNotAllowed If a particular header is not allowed.
-     * @return ResponseInterface
+     * @throws \InvalidArgumentException
      */
     final protected function accessControlRequestHeaders(
         ServerRequestInterface $request,
-        ResponseInterface $response,
-        array &$headers
-    ): ResponseInterface
-    {
+        array $headers
+    ): array {
         // allow headers
-        $allowHeaders           = $this->parseItem('allowHeaders', $request, false);
-        $requestHeaders         = $request->getHeaderLine('access-control-request-headers');
+        $allowHeaders = $this->parseItem('allowHeaders', $request);
+        $requestHeaders = $request->getHeaderLine('access-control-request-headers');
         $originalRequestHeaders = $requestHeaders;
         // they aren't requesting any headers, but let's send them our list
         if ('' === $requestHeaders) {
             $headers['Access-Control-Allow-Headers'] = $allowHeaders;
 
             // return the response
-            return $response;
+            return $headers;
         }
 
         // at this point, they are requesting headers, however, we have no headers configured.
@@ -192,13 +239,13 @@ class Preflight
 
         // now parse the headers for comparison
         // change the string into an array (separated by ,) and trim spaces
-        $requestHeaders = array_map('trim', explode(',', strtolower((string) $requestHeaders)));
+        $requestHeaders = array_map('trim', explode(',', strtolower($requestHeaders)));
         // and do the same with our allowed headers
-        $allowedHeaders = array_map('trim', explode(',', strtolower((string) $allowHeaders)));
+        $allowedHeaders = array_map('trim', explode(',', strtolower($allowHeaders)));
         // loop through each of their provided headers
         foreach ($requestHeaders as $header) {
             // if we are unable to find a match for the header, block it for security.
-            if (false === in_array($header, $allowedHeaders, true)) {
+            if (false === \in_array($header, $allowedHeaders, true)) {
                 // block it
                 $exception = new HeaderNotAllowed(sprintf('Header "%s" not allowed', $header));
                 $exception->setAllowed($allowedHeaders)
@@ -212,11 +259,11 @@ class Preflight
         $headers['Access-Control-Allow-Headers'] = $allowHeaders;
 
         // return the response
-        return $response;
-    }//end accessControlRequestHeaders()
+        return $headers;
+    }
 
     /**
-     * Handle the preflight requests.
+     * Handle the preflight requests and produces a response.
      *
      * Logic is:
      * - Receive a list of previously set headers from calling method (which should
@@ -235,37 +282,35 @@ class Preflight
      * - If the origin is not "*", add a Vary: line to indicate the response may change if
      *   the origin is difference.
      *
-     * @param array                  $settings Our settings.
-     * @param ServerRequestInterface $request  The server request information.
-     * @param ResponseInterface      $response The response handler (should be filled in at end or on error).
-     * @param array                  $headers  The headers we have already created.
-     * @param string                 $origin   The origin setting we have decided upon.
-     *
+     * @param ServerRequestInterface $request The server request information.
      * @return ResponseInterface
+     *
+     * @throws \DomainException If there are no configured allowed methods.
+     * @throws NoMethod If no method was provided by the user.
+     * @throws MethodNotAllowed If the method provided by the user is not allowed.
+     * @throws NoHeadersAllowed If headers are not allowed.
+     * @throws HeaderNotAllowed If a particular header is not allowed.
+     * @throws \InvalidArgumentException
      */
-    public function __invoke(
-        array $settings,
-        ServerRequestInterface $request,
-        ResponseInterface $response,
-        array $headers,
-        string $origin
-    ) : ResponseInterface
+    public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        $this->settings = $settings;
 
         // preflight the access control allow methods
-        $response = $this->accessControlAllowMethods($request, $response, $headers);
+        $headers = $this->accessControlAllowMethods($request, []);
 
         // preflight the access control request headers
-        $response = $this->accessControlRequestHeaders($request, $response, $headers);
+
+        $headers = $this->accessControlRequestHeaders($request, $headers);
 
         // set the Access-Control-Max-Age header. Uses maxAge configuration setting.
         $maxAge = $this->parseItem('maxAge', $request, true);
         // this header should only be set if there is an appropriate configuration setting
         if ($maxAge > 0) {
-            $headers['Access-Control-Max-Age'] = (int) $maxAge;
+            $headers['Access-Control-Max-Age'] = (int)$maxAge;
         }
 
+        /* @var \Psr\Http\Message\ResponseInterface $response */
+        $response = ($this->responseFactory)();
         // add all of our set headers
         foreach ($headers as $k => $v) {
             $response = $response->withHeader($k, $v);
@@ -274,7 +319,7 @@ class Preflight
         // if the origin is configured and is not * (wildcard), indicate to the client and
         // associated proxy servers that the response may vary based on the Origin setting
         // that was provided.
-        if ('*' !== $origin) {
+        if ('*' !== $this->origin) {
             $response = $response->withAddedHeader('Vary', 'Origin');
         }
 
@@ -285,5 +330,5 @@ class Preflight
 
         // return the response
         return $response;
-    }//end __invoke()
-}//end class
+    }
+}

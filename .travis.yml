@@ -3,7 +3,9 @@ sudo: false
 language: php
 
 php:
-  - 7.0 # at the moment no HHVM as composer won't allow it to be set.
+  - 7.0
+  - 7.1
+  - 7.2
   - nightly
 
 matrix:
