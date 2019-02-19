@@ -328,6 +328,11 @@ class Preflight implements LoggerAwareInterface, RequestHandlerInterface, Prefli
             ->withoutHeader('Content-Type')
             ->withoutHeader('Content-Length');
 
+        // add the headers.
+        foreach ($this->headers as $k => $v) {
+            $response = $response->withHeader($k, $v);
+        }
+
         // return the response
         return $response;
     }
