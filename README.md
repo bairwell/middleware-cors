@@ -36,9 +36,9 @@ $ composer require bairwell/middleware-cors
 or by modifying your `composer.json` file:
 ````
 {
-    "require": {
-        "bairwell/middleware-cors" : "@stable"
-    }
+  "require": {
+    "bairwell/middleware-cors": "@stable"
+  }
 }
 ````
 
@@ -52,22 +52,29 @@ $ git clone git://github.com:bairwell/middleware-cors.git
 You can utilise this CORs library as simply as:
 
 ```php
-$slim=new \Slim\App(); // use Slim3 as it supports PSR7 middleware
-$slim->add(new MiddlewareCors()); // add CORs
+$slim = new \Slim\App(); // use Slim3 as it supports PSR7 middleware
+
+// add CORs
+$slim->add(new MiddlewareCors());
+
 // add routes
 $slim->run(); // get Slim running
 ```
 
 but that won't really add much (as it allows all hosts origin and methods by default).
 
-You can make it slightly more complex such as:
+You can make it slightly more complex by:
 
 ```php
-$slim=new \Slim\App(); // use Slim3 as it supports PSR7 middleware
-$config=[
-    'origin'=>'*.example.com' // allow all hosts ending example.com
+$slim = new \Slim\App(); // use Slim3 as it supports PSR7 middleware
+
+$config = [
+    'origin' => '*.example.com' // allow all hosts ending example.com
 ];
-$slim->add(new MiddlewareCors($config)); // add CORs
+
+// add CORs
+$slim->add(new MiddlewareCors($config));
+
 // add routes
 $slim->run(); // get Slim running
 ```
@@ -75,12 +82,15 @@ $slim->run(); // get Slim running
 or
 
 ```php
-$slim=new \Slim\App(); // use Slim3 as it supports PSR7 middleware
-$config=[
-    'origin'=>['*.example.com','*.example.com.test','example.com','dev.*',
-    'allowCredentials'=>true
+$slim = new \Slim\App(); // use Slim3 as it supports PSR7 middleware
+
+$config = [
+    'origin' => ['*.example.com', '*.example.com.test', 'example.com', 'dev.*'],
+    'allowCredentials' => true
 ];
+
 $slim->add(new MiddlewareCors($config)); // add CORs
+
 // add routes
 $slim->run(); // get Slim running
 ```
@@ -94,50 +104,50 @@ allowed per route, see ``tests/MiddlewareCors/FunctionalTests/SlimTest.php``
 ## Suggested settings
 ```php
 // read the allowed methods for a route
- $corsAllowedMethods = function (ServerRequestInterface $request) use ($container) : array {
+$corsAllowedMethods = function (ServerRequestInterface $request) use ($container) : array {
+    // if this closure is called, make sure it has the route available in the container.
+    /* @var RouterInterface $router */
+    $router = $container->get('router');
 
-            // if this closure is called, make sure it has the route available in the container.
-            /* @var RouterInterface $router */
-            $router = $container->get('router');
+    $routeInfo = $router->dispatch($request);
+    $methods = [];
+    // was the method called allowed?
+    if ($routeInfo[0] === Dispatcher::METHOD_NOT_ALLOWED) {
+        $methods = $routeInfo[1];
+    } else {
+        // if it was, see if we can get the routes and then the methods from it.
+        // @var \Slim\Route $route
+        $route = $request->getAttribute('route');
+        
+        // has the request get a route defined? is so use that
+        if (null !== $route) {
+            $methods = $route->getMethods();
+        }
+    }
 
-            $routeInfo = $router->dispatch($request);
-            $methods   = [];
-            // was the method called allowed?
-            if ($routeInfo[0] === Dispatcher::METHOD_NOT_ALLOWED) {
-                $methods = $routeInfo[1];
-            } else {
-                // if it was, see if we can get the routes and then the methods from it.
-                // @var \Slim\Route $route
-                $route = $request->getAttribute('route');
-                // has the request get a route defined? is so use that
-                if (null !== $route) {
-                    $methods = $route->getMethods();
-                }
-            }
+    // if we have methods, let's list them removing the OPTIONs one.
+    if (0 === count($methods)) {
+        // find the OPTIONs method
+        $key = array_search('OPTIONS', $methods,true);
+        // and remove it if set.
+        if (false !== $key) {
+            unset($methods[$key]);
+            $methods = array_values($methods);
+        }
+    }
 
-            // if we have methods, let's list them removing the OPTIONs one.
-            if (0 === count($methods)) {
-                // find the OPTIONs method
-                $key = array_search('OPTIONS', $methods,true);
-                // and remove it if set.
-                if (false !== $key) {
-                    unset($methods[$key]);
-                    $methods = array_values($methods);
-                }
-            }
+    return $methods;
+};
 
-            return $methods;
-        };
-$cors = new MiddlewareCors(
-                [
-                    'origin'           => ['*.example.com','example.com','*.example.com.test','192.168.*','10.*'],
-                    'exposeHeaders'    => '',
-                    'maxAge'           => 120,
-                    'allowCredentials' => true,
-                    'allowMethods'     => $corsAllowedMethods,
-                    'allowHeaders'     => ['Accept', 'Accept-Language', 'Authorization', 'Content-Type','DNT','Keep-Alive','User-Agent','X-Requested-With','If-Modified-Since','Cache-Control','Origin'],
-                ]
-            );
+$cors = new MiddlewareCors([
+    'origin' => ['*.example.com','example.com','*.example.com.test','192.168.*','10.*'],
+    'exposeHeaders' => '',
+    'maxAge' => 120,
+    'allowCredentials' => true,
+    'allowMethods' => $corsAllowedMethods,
+    'allowHeaders' => ['Accept', 'Accept-Language', 'Authorization', 'Content-Type','DNT','Keep-Alive','User-Agent','X-Requested-With','If-Modified-Since','Cache-Control','Origin'],
+]);
+
 $slim->add($cors);
 ```
 ## Standards
@@ -191,10 +201,8 @@ Bairwell/MiddlewareCors is Copyright (c) Bairwell Ltd/Richard Bairwell 2016.
 # Supporting development
 
 You can help support development of this library via a variety of methods:
-
  * "Sponsorship" via a monthly donation via [Patreon](https://www.patreon.com/rbairwell)
  * [Reporting issues](https://github.com/bairwell/middleware-cors/issues)
  * Making updates via [Github](https://github.com/bairwell/middleware-cors)
  * Spreading the word.
  * Just letting me know what you think of it via [Twitter](http://twitter.com/rbairwell) or via [Bairwell Ltd](http://www.bairwell.com)
-
