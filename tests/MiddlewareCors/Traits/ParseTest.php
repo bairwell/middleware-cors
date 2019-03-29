@@ -4,7 +4,6 @@
  *
  * Tests the MiddlewareCors middleware layer.
  */
-declare (strict_types = 1);
 
 namespace Bairwell\MiddlewareCors\Traits;
 
@@ -316,13 +315,13 @@ class ParseTest extends \PHPUnit_Framework_TestCase
      */
     public function testParseAllowCredentialsCallables()
     {
-        $sut              = new MiddlewareCors();
-        $reflection       = new \ReflectionClass(get_class($sut));
+        $sut = new MiddlewareCors();
+        $reflection = new \ReflectionClass(get_class($sut));
         $settingsProperty = $reflection->getProperty('settings');
         $settingsProperty->setAccessible(true);
         $method = $reflection->getMethod('parseAllowCredentials');
         $method->setAccessible(true);
-        $request     = $this->getMockBuilder('Psr\Http\Message\ServerRequestInterface')
+        $request = $this->getMockBuilder('Psr\Http\Message\ServerRequestInterface')
             ->disableOriginalConstructor()
             ->getMock();
         $settingName = 'allowCredentials';
@@ -373,13 +372,13 @@ class ParseTest extends \PHPUnit_Framework_TestCase
      */
     public function testParseAllowCredentialValues()
     {
-        $sut              = new MiddlewareCors();
-        $reflection       = new \ReflectionClass(get_class($sut));
+        $sut = new MiddlewareCors();
+        $reflection = new \ReflectionClass(get_class($sut));
         $settingsProperty = $reflection->getProperty('settings');
         $settingsProperty->setAccessible(true);
         $method = $reflection->getMethod('parseAllowCredentials');
         $method->setAccessible(true);
-        $request     = $this->getMockBuilder('Psr\Http\Message\ServerRequestInterface')
+        $request = $this->getMockBuilder('Psr\Http\Message\ServerRequestInterface')
             ->disableOriginalConstructor()
             ->getMock();
         $settingName = 'allowCredentials';
@@ -417,13 +416,13 @@ class ParseTest extends \PHPUnit_Framework_TestCase
      */
     public function testParseMaxAgeCallables()
     {
-        $sut              = new MiddlewareCors();
-        $reflection       = new \ReflectionClass(get_class($sut));
+        $sut = new MiddlewareCors();
+        $reflection = new \ReflectionClass(get_class($sut));
         $settingsProperty = $reflection->getProperty('settings');
         $settingsProperty->setAccessible(true);
         $method = $reflection->getMethod('parseMaxAge');
         $method->setAccessible(true);
-        $request     = $this->getMockBuilder('Psr\Http\Message\ServerRequestInterface')
+        $request = $this->getMockBuilder('Psr\Http\Message\ServerRequestInterface')
             ->disableOriginalConstructor()
             ->getMock();
         $settingName = 'maxAge';
@@ -500,14 +499,14 @@ class ParseTest extends \PHPUnit_Framework_TestCase
      */
     public function testParseOriginEmptyString()
     {
-        $sut              = new MiddlewareCors();
+        $sut = new MiddlewareCors();
         // setup the logger
-        $this->logger  = new Logger('test');
+        $this->logger = new Logger('test');
         $this->testLogger = new TestHandler();
         $this->logger->pushHandler($this->testLogger);
         $sut->setLogger($this->logger);
         //
-        $reflection       = new \ReflectionClass(get_class($sut));
+        $reflection = new \ReflectionClass(get_class($sut));
         $settingsProperty = $reflection->getProperty('settings');
         $settingsProperty->setAccessible(true);
         $method = $reflection->getMethod('parseOrigin');
@@ -534,14 +533,14 @@ class ParseTest extends \PHPUnit_Framework_TestCase
      */
     public function testParseOriginInvalidString()
     {
-        $sut              = new MiddlewareCors();
+        $sut = new MiddlewareCors();
         // setup the logger
-        $this->logger  = new Logger('test');
+        $this->logger = new Logger('test');
         $this->testLogger = new TestHandler();
         $this->logger->pushHandler($this->testLogger);
         $sut->setLogger($this->logger);
         //
-        $reflection       = new \ReflectionClass(get_class($sut));
+        $reflection = new \ReflectionClass(get_class($sut));
         $settingsProperty = $reflection->getProperty('settings');
         $settingsProperty->setAccessible(true);
         $method = $reflection->getMethod('parseOrigin');
@@ -568,13 +567,13 @@ class ParseTest extends \PHPUnit_Framework_TestCase
      */
     public function testParseMaxAgeValues()
     {
-        $sut              = new MiddlewareCors();
-        $reflection       = new \ReflectionClass(get_class($sut));
+        $sut = new MiddlewareCors();
+        $reflection = new \ReflectionClass(get_class($sut));
         $settingsProperty = $reflection->getProperty('settings');
         $settingsProperty->setAccessible(true);
         $method = $reflection->getMethod('parseMaxAge');
         $method->setAccessible(true);
-        $request     = $this->getMockBuilder('Psr\Http\Message\ServerRequestInterface')
+        $request = $this->getMockBuilder('Psr\Http\Message\ServerRequestInterface')
             ->disableOriginalConstructor()
             ->getMock();
         $settingName = 'maxAge';
@@ -622,19 +621,19 @@ class ParseTest extends \PHPUnit_Framework_TestCase
      */
     protected function parseItem($settingValue, string $expectedResult, bool $isSingle = false)
     {
-        $sut              = new MiddlewareCors();
-        $reflection       = new \ReflectionClass(get_class($sut));
+        $sut = new MiddlewareCors();
+        $reflection = new \ReflectionClass(get_class($sut));
         $settingsProperty = $reflection->getProperty('settings');
         $settingsProperty->setAccessible(true);
         // setup the logger
-        $this->logger  = new Logger('test');
+        $this->logger = new Logger('test');
         $this->testLogger = new TestHandler();
         $this->logger->pushHandler($this->testLogger);
         $sut->setLogger($this->logger);
 
         $method = $reflection->getMethod('parseItem');
         $method->setAccessible(true);
-        $request     = $this->getMockBuilder('Psr\Http\Message\ServerRequestInterface')
+        $request = $this->getMockBuilder('Psr\Http\Message\ServerRequestInterface')
             ->disableOriginalConstructor()
             ->getMock();
         $settingName = 'testItem';

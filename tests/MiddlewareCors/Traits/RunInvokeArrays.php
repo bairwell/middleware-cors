@@ -4,7 +4,6 @@
  *
  * Tests the MiddlewareCors middleware layer.
  */
-declare (strict_types = 1);
 
 namespace Bairwell\MiddlewareCors\Traits;
 
@@ -63,20 +62,20 @@ trait RunInvokeArrays
      */
     public function setUp()
     {
-        $this->defaults        = [
-            'origin'           => '*',
-            'exposeHeaders'    => '',
-            'maxAge'           => 0,
+        $this->defaults = [
+            'origin' => '*',
+            'exposeHeaders' => '',
+            'maxAge' => 0,
             'allowCredentials' => false,
-            'allowMethods'     => 'GET,HEAD,PUT,POST,DELETE',
-            'allowHeaders'     => ''
+            'allowMethods' => 'GET,HEAD,PUT,POST,DELETE',
+            'allowHeaders' => ''
         ];
         $this->allowedSettings = [
-            'exposeHeaders'    => ['string', 'array', 'callable'],
-            'allowMethods'     => ['string', 'array', 'callable'],
-            'allowHeaders'     => ['string', 'array', 'callable'],
-            'origin'           => ['string', 'array', 'callable'],
-            'maxAge'           => ['int', 'callable'],
+            'exposeHeaders' => ['string', 'array', 'callable'],
+            'allowMethods' => ['string', 'array', 'callable'],
+            'allowHeaders' => ['string', 'array', 'callable'],
+            'origin' => ['string', 'array', 'callable'],
+            'maxAge' => ['int', 'callable'],
             'allowCredentials' => ['bool', 'callable']
         ];
     }//end setUp()
@@ -107,7 +106,7 @@ trait RunInvokeArrays
         $sutSettings = array_merge($this->defaults, $settings['configuration']);
         $this->arraysAreSimilar($sutSettings, $sut->getSettings(), 'Matching internal settings');
         // setup the logger
-        $this->logger  = new Logger('test');
+        $this->logger = new Logger('test');
         $this->testLogger = new TestHandler();
         $this->logger->pushHandler($this->testLogger);
         $sut->setLogger($this->logger);
@@ -129,7 +128,7 @@ trait RunInvokeArrays
             );
         // now setup the response stack.
         $responseCalls = [];
-        $response      = $this->getMockForAbstractClass('\Psr\Http\Message\ResponseInterface');
+        $response = $this->getMockForAbstractClass('\Psr\Http\Message\ResponseInterface');
         $response->expects($this->any())
             ->method('withAddedHeader')
             ->will(
@@ -202,8 +201,8 @@ trait RunInvokeArrays
             return;
         }
 
-        $aKeys            = array_keys($a);
-        $bKeys            = array_keys($b);
+        $aKeys = array_keys($a);
+        $bKeys = array_keys($b);
         $differenceInKeys = array_diff($aKeys, $bKeys);
         if (0 !== count($differenceInKeys)) {
             $this->fail(

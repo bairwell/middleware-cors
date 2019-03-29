@@ -11,7 +11,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-declare (strict_types = 1);
 
 namespace Bairwell\MiddlewareCors\Traits;
 
@@ -171,8 +170,8 @@ trait Parse
 
         $this->addLog('Processing origin of "'.$origin.'"');
         // lowercase the user provided origin for comparison purposes.
-        $origin     = strtolower($origin);
-        $parsed     = parse_url($origin);
+        $origin = strtolower($origin);
+        $parsed = parse_url($origin);
         $originHost = $origin;
         if (true === is_array($parsed)) {
             if (true === isset($parsed['host'])) {
@@ -217,7 +216,7 @@ trait Parse
         if ('' === $matched && true === is_string($originSetting)) {
             $this->addLog('Attempting to match origin as string');
             $allowedOrigins[] = $originSetting;
-            $matched          = $this->parseOriginMatch($originSetting, $originHost);
+            $matched = $this->parseOriginMatch($originSetting, $originHost);
         }
 
         // return the matched setting (may be '' to indicate nothing matched)
@@ -241,7 +240,7 @@ trait Parse
             return $return;
         }
         $protocol = 'https://';
-        $port     = 0;
+        $port = 0;
         if (true === isset($parsed['scheme'])) {
             $this->addLog('Parsed a protocol from origin: '.$parsed['scheme']);
             $protocol = $parsed['scheme'].'://';

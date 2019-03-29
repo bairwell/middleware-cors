@@ -2,7 +2,6 @@
 /**
  * MiddlewareCors Test preflight.
  */
-declare (strict_types = 1);
 
 namespace Bairwell\MiddlewareCors;
 
@@ -71,8 +70,8 @@ class PreflightTest extends \PHPUnit_Framework_TestCase
         try {
             $this->runInvoke(
                 [
-                    'method'        => 'OPTIONS',
-                    'setHeaders'    => ['origin' => 'example.com'],
+                    'method' => 'OPTIONS',
+                    'setHeaders' => ['origin' => 'example.com'],
                     'configuration' => ['allowMethods' => '']
                 ]
             );
@@ -104,8 +103,8 @@ class PreflightTest extends \PHPUnit_Framework_TestCase
         try {
             $this->runInvoke(
                 [
-                    'method'        => 'OPTIONS',
-                    'setHeaders'    => ['origin' => 'example.com'],
+                    'method' => 'OPTIONS',
+                    'setHeaders' => ['origin' => 'example.com'],
                     'configuration' => []
                 ]
             );
@@ -142,8 +141,8 @@ class PreflightTest extends \PHPUnit_Framework_TestCase
         try {
             $this->runInvoke(
                 [
-                    'method'        => 'OPTIONS',
-                    'setHeaders'    => ['origin' => 'example.com', 'access-control-request-method' => 'delete'],
+                    'method' => 'OPTIONS',
+                    'setHeaders' => ['origin' => 'example.com', 'access-control-request-method' => 'delete'],
                     'configuration' => ['allowMethods' => ['PUT', 'POST']]
                 ]
             );
@@ -178,20 +177,20 @@ class PreflightTest extends \PHPUnit_Framework_TestCase
      */
     public function testInvokerPreflightValidAcrm()
     {
-        $results  = $this->runInvoke(
+        $results = $this->runInvoke(
             [
-                'method'        => 'OPTIONS',
-                'setHeaders'    => ['origin' => 'example.com', 'access-control-request-method' => 'pUt'],
+                'method' => 'OPTIONS',
+                'setHeaders' => ['origin' => 'example.com', 'access-control-request-method' => 'pUt'],
                 'configuration' => ['allowMethods' => ['PUT', 'POST']]
             ]
         );
         $expected = [
-            'withHeader:Access-Control-Allow-Origin'  => '*',
+            'withHeader:Access-Control-Allow-Origin' => '*',
             'withHeader:Access-Control-Allow-Methods' => 'PUT, POST',
             'withHeader:Access-Control-Allow-Headers' => '',
-            'withStatus'                              => '204:No Content',
-            'withoutHeader:Content-Type'              => true,
-            'withoutHeader:Content-Length'            => true
+            'withStatus' => '204:No Content',
+            'withoutHeader:Content-Type' => true,
+            'withoutHeader:Content-Length' => true
         ];
         $this->arraysAreSimilar($expected, $results);
     }//end testInvokerPreflightValidAcrm()
@@ -221,10 +220,10 @@ class PreflightTest extends \PHPUnit_Framework_TestCase
         try {
             $this->runInvoke(
                 [
-                    'method'        => 'OPTIONS',
-                    'setHeaders'    => [
-                        'origin'                         => 'example.com',
-                        'access-control-request-method'  => 'put',
+                    'method' => 'OPTIONS',
+                    'setHeaders' => [
+                        'origin' => 'example.com',
+                        'access-control-request-method' => 'put',
                         'access-control-request-headers' => 'x-jeff'
                     ],
                     'configuration' => ['allowMethods' => ['PUT', 'POST']]
@@ -264,10 +263,10 @@ class PreflightTest extends \PHPUnit_Framework_TestCase
         try {
             $this->runInvoke(
                 [
-                    'method'        => 'OPTIONS',
-                    'setHeaders'    => [
-                        'origin'                         => 'example.com',
-                        'access-control-request-method'  => 'put',
+                    'method' => 'OPTIONS',
+                    'setHeaders' => [
+                        'origin' => 'example.com',
+                        'access-control-request-method' => 'put',
                         'access-control-request-headers' => 'x-jeff, x-smith, x-jones'
                     ],
                     'configuration' => ['allowMethods' => ['PUT', 'POST'], 'allowHeaders' => 'x-jeff,x-smith']
@@ -306,24 +305,24 @@ class PreflightTest extends \PHPUnit_Framework_TestCase
      */
     public function testInvokerPreflightValidAcrmValidAcrh()
     {
-        $results  = $this->runInvoke(
+        $results = $this->runInvoke(
             [
-                'method'        => 'OPTIONS',
-                'setHeaders'    => [
-                    'origin'                         => 'example.com',
-                    'access-control-request-method'  => 'put',
+                'method' => 'OPTIONS',
+                'setHeaders' => [
+                    'origin' => 'example.com',
+                    'access-control-request-method' => 'put',
                     'access-control-request-headers' => 'x-jeff, x-smith, x-jones'
                 ],
                 'configuration' => ['allowMethods' => ['PUT', 'POST'], 'allowHeaders' => 'x-jeff,x-smith,x-jones']
             ]
         );
         $expected = [
-            'withHeader:Access-Control-Allow-Origin'  => '*',
+            'withHeader:Access-Control-Allow-Origin' => '*',
             'withHeader:Access-Control-Allow-Methods' => 'PUT, POST',
             'withHeader:Access-Control-Allow-Headers' => 'x-jeff, x-smith, x-jones',
-            'withStatus'                              => '204:No Content',
-            'withoutHeader:Content-Type'              => true,
-            'withoutHeader:Content-Length'            => true
+            'withStatus' => '204:No Content',
+            'withoutHeader:Content-Type' => true,
+            'withoutHeader:Content-Length' => true
         ];
         $this->arraysAreSimilar($expected, $results);
     }//end testInvokerPreflightValidAcrmValidAcrh()
@@ -359,33 +358,33 @@ class PreflightTest extends \PHPUnit_Framework_TestCase
      */
     public function testInvokerPreflightAllTheThings()
     {
-            $results  = $this->runInvoke(
+            $results = $this->runInvoke(
                 [
-                    'method'        => 'OPTIONS',
-                    'setHeaders'    => [
-                        'origin'                         => 'http://example.com',
-                        'access-control-request-method'  => 'put',
+                    'method' => 'OPTIONS',
+                    'setHeaders' => [
+                        'origin' => 'http://example.com',
+                        'access-control-request-method' => 'put',
                         'access-control-request-headers' => 'x-jeff, x-smith, x-jones'
                     ],
                     'configuration' => [
-                        'allowMethods'     => ['PUT', 'POST'],
-                        'allowHeaders'     => 'x-jeff,x-smith,x-jones',
-                        'maxAge'           => 300,
+                        'allowMethods' => ['PUT', 'POST'],
+                        'allowHeaders' => 'x-jeff,x-smith,x-jones',
+                        'maxAge' => 300,
                         'allowCredentials' => true,
-                        'origin'           => 'example.com'
+                        'origin' => 'example.com'
                     ]
                 ]
             );
             $expected = [
-                'withHeader:Access-Control-Allow-Origin'      => 'http://example.com',
+                'withHeader:Access-Control-Allow-Origin' => 'http://example.com',
                 'withHeader:Access-Control-Allow-Credentials' => 'true',
-                'withHeader:Access-Control-Allow-Methods'     => 'PUT, POST',
-                'withHeader:Access-Control-Allow-Headers'     => 'x-jeff, x-smith, x-jones',
-                'withHeader:Access-Control-Max-Age'           => 300,
-                'withAddedHeader:Vary'                        => 'Origin',
-                'withStatus'                                  => '204:No Content',
-                'withoutHeader:Content-Type'                  => true,
-                'withoutHeader:Content-Length'                => true
+                'withHeader:Access-Control-Allow-Methods' => 'PUT, POST',
+                'withHeader:Access-Control-Allow-Headers' => 'x-jeff, x-smith, x-jones',
+                'withHeader:Access-Control-Max-Age' => 300,
+                'withAddedHeader:Vary' => 'Origin',
+                'withStatus' => '204:No Content',
+                'withoutHeader:Content-Type' => true,
+                'withoutHeader:Content-Length' => true
             ];
             $this->arraysAreSimilar($expected, $results);
     }//end testInvokerPreflightAllTheThings()
@@ -400,12 +399,12 @@ class PreflightTest extends \PHPUnit_Framework_TestCase
     public function testPreflightAccessControlRequestHeadersNoHeaders()
     {
         $log=function (string $string) { };
-        $sut                    = new Preflight($log);
-        $reflection             = new \ReflectionClass(get_class($sut));
+        $sut = new Preflight($log);
+        $reflection = new \ReflectionClass(get_class($sut));
         $settings=$reflection->getProperty('settings');
         $settings->setAccessible(true);
         $settings->setValue($sut,['allowHeaders'=>[]]);
-        $method                 = $reflection->getMethod('accessControlRequestHeaders');
+        $method = $reflection->getMethod('accessControlRequestHeaders');
         $method->setAccessible(true);
         $request = $this->getMockForAbstractClass('\Psr\Http\Message\ServerRequestInterface');
         $request->expects($this->any())
@@ -437,13 +436,13 @@ class PreflightTest extends \PHPUnit_Framework_TestCase
     public function testPreflightAccessControlRequestHeadersInvalidHeaders()
     {
         $log=function (string $string) { };
-        $sut                    = new Preflight($log);
-        $reflection             = new \ReflectionClass(get_class($sut));
+        $sut = new Preflight($log);
+        $reflection = new \ReflectionClass(get_class($sut));
 
         $settings=$reflection->getProperty('settings');
         $settings->setAccessible(true);
         $settings->setValue($sut,['allowHeaders'=>['x-smith']]);
-        $method                 = $reflection->getMethod('accessControlRequestHeaders');
+        $method = $reflection->getMethod('accessControlRequestHeaders');
         $method->setAccessible(true);
         $request = $this->getMockForAbstractClass('\Psr\Http\Message\ServerRequestInterface');
         $request->expects($this->any())

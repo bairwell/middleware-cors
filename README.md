@@ -101,7 +101,7 @@ allowed per route, see ``tests/MiddlewareCors/FunctionalTests/SlimTest.php``
             $router = $container->get('router');
 
             $routeInfo = $router->dispatch($request);
-            $methods   = [];
+            $methods = [];
             // was the method called allowed?
             if ($routeInfo[0] === Dispatcher::METHOD_NOT_ALLOWED) {
                 $methods = $routeInfo[1];
@@ -130,12 +130,12 @@ allowed per route, see ``tests/MiddlewareCors/FunctionalTests/SlimTest.php``
         };
 $cors = new MiddlewareCors(
                 [
-                    'origin'           => ['*.example.com','example.com','*.example.com.test','192.168.*','10.*'],
-                    'exposeHeaders'    => '',
-                    'maxAge'           => 120,
+                    'origin' => ['*.example.com','example.com','*.example.com.test','192.168.*','10.*'],
+                    'exposeHeaders' => '',
+                    'maxAge' => 120,
                     'allowCredentials' => true,
-                    'allowMethods'     => $corsAllowedMethods,
-                    'allowHeaders'     => ['Accept', 'Accept-Language', 'Authorization', 'Content-Type','DNT','Keep-Alive','User-Agent','X-Requested-With','If-Modified-Since','Cache-Control','Origin'],
+                    'allowMethods' => $corsAllowedMethods,
+                    'allowHeaders' => ['Accept', 'Accept-Language', 'Authorization', 'Content-Type','DNT','Keep-Alive','User-Agent','X-Requested-With','If-Modified-Since','Cache-Control','Origin'],
                 ]
             );
 $slim->add($cors);

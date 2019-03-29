@@ -67,7 +67,7 @@ class SlimTest extends \PHPUnit_Framework_TestCase
             $router = $container->get('router');
 
             $routeInfo = $router->dispatch($request);
-            $methods   = [];
+            $methods = [];
             // was the method called allowed?
             if ($routeInfo[0] === Dispatcher::METHOD_NOT_ALLOWED) {
                 $methods = $routeInfo[1];
@@ -95,18 +95,18 @@ class SlimTest extends \PHPUnit_Framework_TestCase
             return $methods;
         };
         // setup CORs
-        $cors    = new MiddlewareCors(
+        $cors = new MiddlewareCors(
             [
-                'origin'           => $this->allowedHosts,
-                'exposeHeaders'    => '',
-                'maxAge'           => 60,
+                'origin' => $this->allowedHosts,
+                'exposeHeaders' => '',
+                'maxAge' => 60,
                 'allowCredentials' => true, // we want to allow credentials
-                'allowMethods'     => $corsAllowedMethods,
-                'allowHeaders'     => ['Accept-Language', 'Authorization', 'Content-type'],
+                'allowMethods' => $corsAllowedMethods,
+                'allowHeaders' => ['Accept-Language', 'Authorization', 'Content-type'],
             ]
         );
         // setup the logger
-        $this->logger  = new Logger('test');
+        $this->logger = new Logger('test');
         $this->testLogger = new TestHandler();
         $this->logger->pushHandler($this->testLogger);
         $cors->setLogger($this->logger);
@@ -144,8 +144,8 @@ class SlimTest extends \PHPUnit_Framework_TestCase
         // Prepare request and response objects
         $uri = Uri::createFromString($url);
         $slimHeaders=new Headers($headers);
-        $body     = new RequestBody();
-        $request  = new Request($method, $uri, $slimHeaders,[], [], $body);
+        $body = new RequestBody();
+        $request = new Request($method, $uri, $slimHeaders,[], [], $body);
         $response=new Response();
         // override the Slim request and responses with our dummies
         $slim->getContainer()['request']=$request;

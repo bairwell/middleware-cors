@@ -9,7 +9,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-declare (strict_types = 1);
 
 namespace Bairwell;
 
@@ -40,7 +39,7 @@ class MiddlewareCorsTest extends \PHPUnit_Framework_TestCase
      */
     public function testCheckDefaultSettings()
     {
-        $sut      = new MiddlewareCors();
+        $sut = new MiddlewareCors();
         $defaults = $sut->getDefaults();
         $this->arraysAreSimilar($this->defaults, $defaults);
         $settings = $sut->getSettings();
@@ -57,7 +56,7 @@ class MiddlewareCorsTest extends \PHPUnit_Framework_TestCase
      * @covers \Bairwell\MiddlewareCors::setLogger
      */
     public function testLogger() {
-        $sut      = new MiddlewareCors();
+        $sut = new MiddlewareCors();
         $addLog=new \ReflectionMethod($sut,'addLog');
         $addLog->setAccessible(true);
         $this->assertFalse($addLog->invoke($sut,'CORs: Log entry'));
@@ -78,10 +77,10 @@ class MiddlewareCorsTest extends \PHPUnit_Framework_TestCase
      */
     public function testCheckChangedSettingsViaConstructor()
     {
-        $sut                = new MiddlewareCors(['origin' => 'test']);
-        $expected           = $this->defaults;
+        $sut = new MiddlewareCors(['origin' => 'test']);
+        $expected = $this->defaults;
         $expected['origin'] = 'test';
-        $settings           = $sut->getSettings();
+        $settings = $sut->getSettings();
         $this->arraysAreSimilar($expected, $settings);
     }//end testCheckChangedSettingsViaConstructor()
 
@@ -97,7 +96,7 @@ class MiddlewareCorsTest extends \PHPUnit_Framework_TestCase
     {
         $sut = new MiddlewareCors();
         $sut->setSettings(['maxAge' => 123, 'allowCredentials' => true]);
-        $expected           = $this->defaults;
+        $expected = $this->defaults;
         $expected['maxAge'] = 123;
         $expected['allowCredentials'] = true;
         $settings = $sut->getSettings();
@@ -115,10 +114,10 @@ class MiddlewareCorsTest extends \PHPUnit_Framework_TestCase
     {
         $sut = new MiddlewareCors();
         $sut->setSettings(['maxAge' => 123, 'allowCredentials' => true, 'random' => '123']);
-        $expected           = $this->defaults;
+        $expected = $this->defaults;
         $expected['maxAge'] = 123;
         $expected['allowCredentials'] = true;
-        $expected['random']           = '123';
+        $expected['random'] = '123';
         $settings = $sut->getSettings();
         $this->arraysAreSimilar($expected, $settings);
     }//end testCheckChangedSettingsViaSetterRandomSettings()
@@ -135,10 +134,10 @@ class MiddlewareCorsTest extends \PHPUnit_Framework_TestCase
      */
     public function testInvokerGetDefaults()
     {
-        $results  = $this->runInvoke(
+        $results = $this->runInvoke(
             [
-                'method'        => 'GET',
-                'setHeaders'    => [],
+                'method' => 'GET',
+                'setHeaders' => [],
                 'configuration' => []
             ]
         );
@@ -169,10 +168,10 @@ class MiddlewareCorsTest extends \PHPUnit_Framework_TestCase
      */
     public function testInvokerWithOriginHeader()
     {
-        $results  = $this->runInvoke(
+        $results = $this->runInvoke(
             [
-                'method'        => 'GET',
-                'setHeaders'    => ['origin' => 'http://example.com'],
+                'method' => 'GET',
+                'setHeaders' => ['origin' => 'http://example.com'],
                 'configuration' => []
             ]
         );
@@ -212,10 +211,10 @@ class MiddlewareCorsTest extends \PHPUnit_Framework_TestCase
      */
     public function testInvokerWithFullyQualifiedOriginHeader()
     {
-        $results  = $this->runInvoke(
+        $results = $this->runInvoke(
             [
-                'method'        => 'GET',
-                'setHeaders'    => ['origin' => 'http://example.com:83/text.html'],
+                'method' => 'GET',
+                'setHeaders' => ['origin' => 'http://example.com:83/text.html'],
                 'configuration' => []
             ]
         );
@@ -253,10 +252,10 @@ class MiddlewareCorsTest extends \PHPUnit_Framework_TestCase
      */
     public function testInvokerWithFullyQualifiedOriginHeaderAndProtocol()
     {
-        $results  = $this->runInvoke(
+        $results = $this->runInvoke(
             [
-                'method'        => 'GET',
-                'setHeaders'    => ['origin' => 'https://example.com:83/text.html'],
+                'method' => 'GET',
+                'setHeaders' => ['origin' => 'https://example.com:83/text.html'],
                 'configuration' => ['origin' => 'example.com']
             ]
         );
@@ -296,10 +295,10 @@ class MiddlewareCorsTest extends \PHPUnit_Framework_TestCase
      */
     public function testInvokerWithFullyQualifiedOriginHeaderAndProtocolStandardPort()
     {
-        $results  = $this->runInvoke(
+        $results = $this->runInvoke(
             [
-                'method'        => 'GET',
-                'setHeaders'    => ['origin' => 'https://example.com:443/text.html'],
+                'method' => 'GET',
+                'setHeaders' => ['origin' => 'https://example.com:443/text.html'],
                 'configuration' => ['origin' => 'example.com']
             ]
         );
@@ -339,10 +338,10 @@ class MiddlewareCorsTest extends \PHPUnit_Framework_TestCase
      */
     public function testInvokerWithFullyQualifiedOriginHeaderAndProtocolNoPort()
     {
-        $results  = $this->runInvoke(
+        $results = $this->runInvoke(
             [
-                'method'        => 'GET',
-                'setHeaders'    => ['origin' => 'https://testing.com/text.html'],
+                'method' => 'GET',
+                'setHeaders' => ['origin' => 'https://testing.com/text.html'],
                 'configuration' => ['origin' => 'testing.com']
             ]
         );
@@ -382,10 +381,10 @@ class MiddlewareCorsTest extends \PHPUnit_Framework_TestCase
      */
     public function testInvokerWithCustomOriginHeader()
     {
-        $results  = $this->runInvoke(
+        $results = $this->runInvoke(
             [
-                'method'        => 'GET',
-                'setHeaders'    => ['origin' => 'http://example.com'],
+                'method' => 'GET',
+                'setHeaders' => ['origin' => 'http://example.com'],
                 'configuration' => ['origin' => 'example.com']
             ]
         );
@@ -429,8 +428,8 @@ class MiddlewareCorsTest extends \PHPUnit_Framework_TestCase
         try {
             $results = $this->runInvoke(
                 [
-                    'method'        => 'GET',
-                    'setHeaders'    => ['origin' => 'dummy.com'],
+                    'method' => 'GET',
+                    'setHeaders' => ['origin' => 'dummy.com'],
                     'configuration' => ['origin' => 'example.com']
                 ]
             );
@@ -468,10 +467,10 @@ class MiddlewareCorsTest extends \PHPUnit_Framework_TestCase
      */
     public function testInvokerWithCustomOriginHeaderEmpty()
     {
-        $results  = $this->runInvoke(
+        $results = $this->runInvoke(
             [
-                'method'        => 'GET',
-                'setHeaders'    => ['origin' => ''],
+                'method' => 'GET',
+                'setHeaders' => ['origin' => ''],
                 'configuration' => ['origin' => 'example.com']
             ]
         );
@@ -504,8 +503,8 @@ class MiddlewareCorsTest extends \PHPUnit_Framework_TestCase
         try {
             $results = $this->runInvoke(
                 [
-                    'method'        => 'GET',
-                    'setHeaders'    => ['origin' => 'dummy.com'],
+                    'method' => 'GET',
+                    'setHeaders' => ['origin' => 'dummy.com'],
                     'configuration' => ['origin' => 'example.com']
                 ]
             );
@@ -549,8 +548,8 @@ class MiddlewareCorsTest extends \PHPUnit_Framework_TestCase
         try {
             $results = $this->runInvoke(
                 [
-                    'method'        => 'GET',
-                    'setHeaders'    => ['origin' => 'dummy.com'],
+                    'method' => 'GET',
+                    'setHeaders' => ['origin' => 'dummy.com'],
                     'configuration' => ['origin' => $originCallback]
                 ]
             );
@@ -593,10 +592,10 @@ class MiddlewareCorsTest extends \PHPUnit_Framework_TestCase
         $originCallback = function ($request) {
             return 'dummy.com';
         };
-        $results  = $this->runInvoke(
+        $results = $this->runInvoke(
             [
-                'method'        => 'GET',
-                'setHeaders'    => ['origin' => 'dummy.com'],
+                'method' => 'GET',
+                'setHeaders' => ['origin' => 'dummy.com'],
                 'configuration' => ['origin' => $originCallback]
             ]
         );
@@ -636,10 +635,10 @@ class MiddlewareCorsTest extends \PHPUnit_Framework_TestCase
      */
     public function testInvokerWithOriginArray()
     {
-        $results  = $this->runInvoke(
+        $results = $this->runInvoke(
             [
-                'method'        => 'GET',
-                'setHeaders'    => ['origin' => 'dummy.com'],
+                'method' => 'GET',
+                'setHeaders' => ['origin' => 'dummy.com'],
                 'configuration' => ['origin' => ['example.com', 'dummy.com']]
             ]
         );
@@ -681,10 +680,10 @@ class MiddlewareCorsTest extends \PHPUnit_Framework_TestCase
      */
     public function testInvokerWithOriginArrayWildcard()
     {
-        $results  = $this->runInvoke(
+        $results = $this->runInvoke(
             [
-                'method'        => 'GET',
-                'setHeaders'    => ['origin' => 'www.dummy.com'],
+                'method' => 'GET',
+                'setHeaders' => ['origin' => 'www.dummy.com'],
                 'configuration' => ['origin' => ['example.com', '*.dummy.com']]
             ]
         );
@@ -729,8 +728,8 @@ class MiddlewareCorsTest extends \PHPUnit_Framework_TestCase
         try {
             $results = $this->runInvoke(
                 [
-                    'method'        => 'GET',
-                    'setHeaders'    => ['origin' => 'bbc.co.uk'],
+                    'method' => 'GET',
+                    'setHeaders' => ['origin' => 'bbc.co.uk'],
                     'configuration' => ['origin' => ['example.com', 'dummy.com']]
                 ]
             );
@@ -771,17 +770,17 @@ class MiddlewareCorsTest extends \PHPUnit_Framework_TestCase
      */
     public function testInvokerWithOriginHeaderAndCredentials()
     {
-        $results  = $this->runInvoke(
+        $results = $this->runInvoke(
             [
-                'method'        => 'GET',
-                'setHeaders'    => ['origin' => 'example.com'],
+                'method' => 'GET',
+                'setHeaders' => ['origin' => 'example.com'],
                 'configuration' => ['allowCredentials' => true]
             ]
         );
         $expected = [
-            'withHeader:Access-Control-Allow-Origin'      => '*',
+            'withHeader:Access-Control-Allow-Origin' => '*',
             'withHeader:Access-Control-Allow-Credentials' => 'true',
-            'calledNext'                                  => 'called'
+            'calledNext' => 'called'
         ];
         $this->arraysAreSimilar($results, $expected);
         // check logs
@@ -817,18 +816,18 @@ class MiddlewareCorsTest extends \PHPUnit_Framework_TestCase
      */
     public function testInvokerWithOriginHeaderAndCredentialsWithHeaders()
     {
-        $results  = $this->runInvoke(
+        $results = $this->runInvoke(
             [
-                'method'        => 'GET',
-                'setHeaders'    => ['origin' => 'example.com'],
+                'method' => 'GET',
+                'setHeaders' => ['origin' => 'example.com'],
                 'configuration' => ['allowCredentials' => true, 'exposeHeaders' => 'XY,ZX']
             ]
         );
         $expected = [
-            'withHeader:Access-Control-Allow-Origin'      => '*',
+            'withHeader:Access-Control-Allow-Origin' => '*',
             'withHeader:Access-Control-Allow-Credentials' => 'true',
-            'withHeader:Access-Control-Expose-Headers'    => 'XY, ZX',
-            'calledNext'                                  => 'called'
+            'withHeader:Access-Control-Expose-Headers' => 'XY, ZX',
+            'calledNext' => 'called'
         ];
         $this->arraysAreSimilar($results, $expected);
         // check logs

@@ -4,7 +4,6 @@
  *
  * Tests the MiddlewareCors middleware layer.
  */
-declare (strict_types = 1);
 
 namespace Bairwell\MiddlewareCors\Traits;
 
@@ -32,13 +31,13 @@ class ValidateSettingsTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->allowedSettings = [
-            'exposeHeaders'    => ['string', 'array', 'callable'],
-            'allowMethods'     => ['string', 'array', 'callable'],
-            'allowHeaders'     => ['string', 'array', 'callable'],
-            'origin'           => ['string', 'array', 'callable'],
-            'maxAge'           => ['int', 'callable'],
+            'exposeHeaders' => ['string', 'array', 'callable'],
+            'allowMethods' => ['string', 'array', 'callable'],
+            'allowHeaders' => ['string', 'array', 'callable'],
+            'origin' => ['string', 'array', 'callable'],
+            'maxAge' => ['int', 'callable'],
             'allowCredentials' => ['bool', 'callable'],
-            'blockedCallback'  => ['callable']
+            'blockedCallback' => ['callable']
         ];
     }//end setUp()
     /**
@@ -54,7 +53,7 @@ class ValidateSettingsTest extends \PHPUnit_Framework_TestCase
      */
     public function testValidateSettings()
     {
-        $sut              = new MiddlewareCors\ValidateSettings();
+        $sut = new MiddlewareCors\ValidateSettings();
         // general tests
         $testData = [
             ['notOn' => 'string', 'value' => 'abc'],

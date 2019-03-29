@@ -14,7 +14,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-declare (strict_types = 1);
 
 namespace Bairwell;
 
@@ -76,11 +75,11 @@ class MiddlewareCors
      * @var array
      */
     protected $allowedSettings = [
-        'exposeHeaders'    => ['string', 'array', 'callable'],
-        'allowMethods'     => ['string', 'array', 'callable'],
-        'allowHeaders'     => ['string', 'array', 'callable'],
-        'origin'           => ['string', 'array', 'callable'],
-        'maxAge'           => ['int', 'callable'],
+        'exposeHeaders' => ['string', 'array', 'callable'],
+        'allowMethods' => ['string', 'array', 'callable'],
+        'allowHeaders' => ['string', 'array', 'callable'],
+        'origin' => ['string', 'array', 'callable'],
+        'maxAge' => ['int', 'callable'],
         'allowCredentials' => ['bool', 'callable']
     ];
 
@@ -113,8 +112,8 @@ class MiddlewareCors
     public function __construct(array $settings = [])
     {
         $this->validateSettings = new ValidateSettings();
-        $this->preflight        = new Preflight([$this,'addLog']);
-        $this->settings         = $this->getDefaults();
+        $this->preflight = new Preflight([$this,'addLog']);
+        $this->settings = $this->getDefaults();
         $this->setSettings($settings);
     }//end __construct()
 
@@ -156,12 +155,12 @@ class MiddlewareCors
     {
         // our default settings
         $return = [
-            'origin'           => '*',
-            'exposeHeaders'    => '',
-            'maxAge'           => 0,
+            'origin' => '*',
+            'exposeHeaders' => '',
+            'maxAge' => 0,
             'allowCredentials' => false,
-            'allowMethods'     => 'GET,HEAD,PUT,POST,DELETE',
-            'allowHeaders'     => '',
+            'allowMethods' => 'GET,HEAD,PUT,POST,DELETE',
+            'allowHeaders' => '',
         ];
 
         return $return;
@@ -240,7 +239,7 @@ class MiddlewareCors
         // All other fields are "request specific" (either preflight or not).
         // set the Access-Control-Allow-Origin header. Uses origin configuration setting.
         $allowedOrigins = [];
-        $origin         = $this->parseOrigin($request, $allowedOrigins);
+        $origin = $this->parseOrigin($request, $allowedOrigins);
         // check the origin is one of the allowed ones.
         if ('' === $origin) {
             $exception = new BadOrigin('Bad Origin');

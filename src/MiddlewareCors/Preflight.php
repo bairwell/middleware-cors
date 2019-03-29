@@ -11,7 +11,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-declare (strict_types = 1);
 
 namespace Bairwell\MiddlewareCors;
 
@@ -171,8 +170,8 @@ class Preflight
     ): ResponseInterface
     {
         // allow headers
-        $allowHeaders           = $this->parseItem('allowHeaders', $request, false);
-        $requestHeaders         = $request->getHeaderLine('access-control-request-headers');
+        $allowHeaders = $this->parseItem('allowHeaders', $request, false);
+        $requestHeaders = $request->getHeaderLine('access-control-request-headers');
         $originalRequestHeaders = $requestHeaders;
         // they aren't requesting any headers, but let's send them our list
         if ('' === $requestHeaders) {
