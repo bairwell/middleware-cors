@@ -60,7 +60,7 @@ class Preflight
      *
      * @param string $string String to log.
      *
-     * @return bool True if logged, false if no logger.
+     * @return boolean True if logged, false if no logger.
      */
     final protected function addLog(string $string) : bool
     {

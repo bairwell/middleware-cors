@@ -55,7 +55,7 @@ class ValidateSettings
      * @param array $allowed Which items are allowed.
      *
      * @throws \InvalidArgumentException If the data is inaccurate/incorrect.
-     * @return bool True if validated, false if not
+     * @return boolean True if validated, false if not
      */
     final protected function validateBool($value, array $allowed) : bool
     {
@@ -75,7 +75,7 @@ class ValidateSettings
      * @param array $allowed Which items are allowed.
      *
      * @throws \InvalidArgumentException If the data is inaccurate/incorrect.
-     * @return bool True if validated, false if not
+     * @return boolean True if validated, false if not
      */
     final protected function validateString($value, array $allowed) : bool
     {
@@ -95,7 +95,7 @@ class ValidateSettings
      * @param array $allowed Which items are allowed.
      *
      * @throws \InvalidArgumentException If the data is inaccurate/incorrect.
-     * @return bool True if validated, false if not
+     * @return boolean True if validated, false if not
      */
     final protected function validateCallable($value, array $allowed) : bool
     {
@@ -116,7 +116,7 @@ class ValidateSettings
      * @param array  $allowed Which items are allowed.
      *
      * @throws \InvalidArgumentException If the data is inaccurate/incorrect.
-     * @return bool True if validated, false if not
+     * @return boolean True if validated, false if not
      */
     final protected function validateInt(string $name, $value, array $allowed) : bool
     {
@@ -141,7 +141,7 @@ class ValidateSettings
      * @param array  $allowed Which items are allowed.
      *
      * @throws \InvalidArgumentException If the data is inaccurate/incorrect.
-     * @return bool True if validated, false if not
+     * @return boolean True if validated, false if not
      */
     final protected function validateArray(string $name, $value, array $allowed) : bool
     {
