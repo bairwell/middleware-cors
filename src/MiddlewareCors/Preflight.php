@@ -61,10 +61,9 @@ class Preflight
      *
      * @return boolean True if logged, false if no logger.
      */
-    final protected function addLog(string $string) : bool
+    final protected function addLog(string $string): bool
     {
-        $return = call_user_func($this->logger, $string);
-        return $return;
+        return call_user_func($this->logger, $string);
     }//end addLog()
 
     /**
@@ -94,11 +93,11 @@ class Preflight
         ServerRequestInterface $request,
         ResponseInterface $response,
         array &$headers
-    ) : ResponseInterface
+    ): ResponseInterface
     {
         // check the allow methods
         $allowMethods = $this->parseItem('allowMethods', $request, false);
-        if ('' === $allowMethods) {
+        if ($allowMethods === '') {
             // if no methods are allowed, error
             $exception = new \DomainException('No methods configured to be allowed for request');
             throw $exception;
@@ -108,7 +107,7 @@ class Preflight
         $methods = array_map('trim', explode(',', strtoupper((string) $allowMethods)));
 
         // check they have provided a method
-        if ('' === $request->getHeaderLine('access-control-request-method')) {
+        if ($request->getHeaderLine('access-control-request-method') === '') {
             // if no methods provided, block it.
             $exception = new NoMethod('No method provided');
             throw $exception;
@@ -116,9 +115,10 @@ class Preflight
 
         // check the requested method is one of our allowed ones. Uppercase it.
         $requestedMethod = strtoupper($request->getHeaderLine('access-control-request-method'));
+
         // can we find the requested method (we are presuming they are only supplying one as per
         // the CORS specification) in our list of headers.
-        if (false === in_array($requestedMethod, $methods)) {
+        if (!in_array($requestedMethod, $methods)) {
             // no match, throw it.
             $exception = new MethodNotAllowed('Method not allowed');
             $exception->setSent($requestedMethod)
@@ -173,8 +173,9 @@ class Preflight
         $allowHeaders = $this->parseItem('allowHeaders', $request, false);
         $requestHeaders = $request->getHeaderLine('access-control-request-headers');
         $originalRequestHeaders = $requestHeaders;
+
         // they aren't requesting any headers, but let's send them our list
-        if ('' === $requestHeaders) {
+        if ($requestHeaders === '') {
             $headers['Access-Control-Allow-Headers'] = $allowHeaders;
 
             // return the response
@@ -182,7 +183,7 @@ class Preflight
         }
 
         // at this point, they are requesting headers, however, we have no headers configured.
-        if ('' === $allowHeaders) {
+        if ($allowHeaders === '') {
             // no headers configured, so let's block it.
             $exception = new NoHeadersAllowed('No headers are allowed');
             $exception->setSent($requestHeaders);
@@ -192,12 +193,14 @@ class Preflight
         // now parse the headers for comparison
         // change the string into an array (separated by ,) and trim spaces
         $requestHeaders = array_map('trim', explode(',', strtolower((string) $requestHeaders)));
+
         // and do the same with our allowed headers
         $allowedHeaders = array_map('trim', explode(',', strtolower((string) $allowHeaders)));
+
         // loop through each of their provided headers
         foreach ($requestHeaders as $header) {
             // if we are unable to find a match for the header, block it for security.
-            if (false === in_array($header, $allowedHeaders, true)) {
+            if (!in_array($header, $allowedHeaders, true)) {
                 // block it
                 $exception = new HeaderNotAllowed(sprintf('Header "%s" not allowed', $header));
                 $exception->setAllowed($allowedHeaders)
@@ -234,13 +237,18 @@ class Preflight
      * - If the origin is not "*", add a Vary: line to indicate the response may change if
      *   the origin is difference.
      *
-     * @param array                  $settings Our settings.
-     * @param ServerRequestInterface $request  The server request information.
-     * @param ResponseInterface      $response The response handler (should be filled in at end or on error).
-     * @param array                  $headers  The headers we have already created.
-     * @param string                 $origin   The origin setting we have decided upon.
+     * @param array $settings Our settings.
+     * @param ServerRequestInterface $request The server request information.
+     * @param ResponseInterface $response The response handler (should be filled in at end or on error).
+     * @param array $headers The headers we have already created.
+     * @param string $origin The origin setting we have decided upon.
      *
      * @return ResponseInterface
+     *
+     * @throws HeaderNotAllowed
+     * @throws MethodNotAllowed
+     * @throws NoHeadersAllowed
+     * @throws NoMethod
      */
     public function __invoke(
         array $settings,
@@ -248,7 +256,7 @@ class Preflight
         ResponseInterface $response,
         array $headers,
         string $origin
-    ) : ResponseInterface
+    ): ResponseInterface
     {
         $this->settings = $settings;
 
@@ -260,6 +268,7 @@ class Preflight
 
         // set the Access-Control-Max-Age header. Uses maxAge configuration setting.
         $maxAge = $this->parseItem('maxAge', $request, true);
+
         // this header should only be set if there is an appropriate configuration setting
         if ($maxAge > 0) {
             $headers['Access-Control-Max-Age'] = (int) $maxAge;
@@ -273,7 +282,7 @@ class Preflight
         // if the origin is configured and is not * (wildcard), indicate to the client and
         // associated proxy servers that the response may vary based on the Origin setting
         // that was provided.
-        if ('*' !== $origin) {
+        if ($origin !== '*') {
             $response = $response->withAddedHeader('Vary', 'Origin');
         }
 

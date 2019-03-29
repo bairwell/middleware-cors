@@ -35,9 +35,10 @@ abstract class ExceptionAbstract extends \Exception
      *
      * @return $this
      */
-    public function setSent(string $sent) : self
+    public function setSent(string $sent): self
     {
         $this->sent = $sent;
+
         return $this;
     }//end setSent()
 
@@ -47,7 +48,7 @@ abstract class ExceptionAbstract extends \Exception
      *
      * @return string
      */
-    public function getSent() : string
+    public function getSent(): string
     {
         return $this->sent;
     }//end getSent()
@@ -59,9 +60,10 @@ abstract class ExceptionAbstract extends \Exception
      *
      * @return $this
      */
-    public function setAllowed(array $allowed) : self
+    public function setAllowed(array $allowed): self
     {
         $this->allowed = $allowed;
+
         return $this;
     }//end setAllowed()
 
@@ -71,7 +73,7 @@ abstract class ExceptionAbstract extends \Exception
      *
      * @return array
      */
-    public function getAllowed() : array
+    public function getAllowed(): array
     {
         return $this->allowed;
     }//end getAllowed()

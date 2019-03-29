@@ -59,9 +59,9 @@ class SlimTest extends \PHPUnit_Framework_TestCase
      *
      * @return MiddlewareCors
      */
-    protected function getCors(ContainerInterface $container) : MiddlewareCors {
+    protected function getCors(ContainerInterface $container): MiddlewareCors {
         // set our allowed methods callback to integrate with Slim
-        $corsAllowedMethods = function (ServerRequestInterface $request) use ($container) : array {
+        $corsAllowedMethods = function (ServerRequestInterface $request) use ($container): array {
             // if this closure is called, make sure it has the route available in the container.
             /* @var \Slim\Interfaces\RouterInterface $router */
             $router = $container->get('router');
@@ -114,7 +114,7 @@ class SlimTest extends \PHPUnit_Framework_TestCase
     }
 
     protected function getSlimTest(string $method,
-                                   string $url,array $headers=[]) : ResponseInterface {
+                                   string $url,array $headers=[]): ResponseInterface {
         $slim=new \Slim\App(['settings'=>['displayErrorDetails' => true]]);
 
         // add the CORs middleware
@@ -123,8 +123,8 @@ class SlimTest extends \PHPUnit_Framework_TestCase
         // finish adding the CORs middleware
 
         // add our own error handler.
-        $errorHandler=function (ContainerInterface $container) : callable {
-            $handler=function (ServerRequestInterface $request,ResponseInterface $response,\Exception $e) : ResponseInterface {
+        $errorHandler=function (ContainerInterface $container): callable {
+            $handler=function (ServerRequestInterface $request,ResponseInterface $response,\Exception $e): ResponseInterface {
                 $body = new Body(fopen('php://temp', 'r+'));
                 $body->write('Error Handler caught exception type '.get_class($e).': '.$e->getMessage());
                 $return=$response

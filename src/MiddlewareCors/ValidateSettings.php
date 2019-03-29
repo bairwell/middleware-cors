@@ -21,7 +21,6 @@ namespace Bairwell\MiddlewareCors;
  */
 class ValidateSettings
 {
-
     /**
      * Validate a setting.
      *
@@ -33,11 +32,11 @@ class ValidateSettings
      */
     public function __invoke(string $name, $value, array $allowed)
     {
-        if ((true === $this->validateString($value, $allowed))
-            || (true === $this->validateArray($name, $value, $allowed))
-            || (true === $this->validateCallable($value, $allowed))
-            || (true === $this->validateInt($name, $value, $allowed))
-            || (true === $this->validateBool($value, $allowed))
+        if (($this->validateString($value, $allowed))
+            || ($this->validateArray($name, $value, $allowed))
+            || ($this->validateCallable($value, $allowed))
+            || ($this->validateInt($name, $value, $allowed))
+            || ($this->validateBool($value, $allowed))
         ) {
             return;
         }
@@ -56,15 +55,9 @@ class ValidateSettings
      * @throws \InvalidArgumentException If the data is inaccurate/incorrect.
      * @return boolean True if validated, false if not
      */
-    final protected function validateBool($value, array $allowed) : bool
+    final protected function validateBool($value, array $allowed): bool
     {
-        if (true === in_array('bool', $allowed)) {
-            if (true === is_bool($value)) {
-                return true;
-            }
-        }
-
-        return false;
+        return is_bool($value) && in_array('bool', $allowed);
     }//end validateBool()
 
     /**
@@ -76,15 +69,9 @@ class ValidateSettings
      * @throws \InvalidArgumentException If the data is inaccurate/incorrect.
      * @return boolean True if validated, false if not
      */
-    final protected function validateString($value, array $allowed) : bool
+    final protected function validateString($value, array $allowed): bool
     {
-        if (true === in_array('string', $allowed)) {
-            if (true === is_string($value)) {
-                return true;
-            }
-        }
-
-        return false;
+        return is_string($value) && in_array('string', $allowed);
     }//end validateString()
 
     /**
@@ -96,15 +83,9 @@ class ValidateSettings
      * @throws \InvalidArgumentException If the data is inaccurate/incorrect.
      * @return boolean True if validated, false if not
      */
-    final protected function validateCallable($value, array $allowed) : bool
+    final protected function validateCallable($value, array $allowed): bool
     {
-        if (true === in_array('callable', $allowed)) {
-            if (true === is_callable($value)) {
-                return true;
-            }
-        }
-
-        return false;
+        return is_callable($value) && in_array('callable', $allowed);
     }//end validateCallable()
 
     /**
@@ -117,16 +98,14 @@ class ValidateSettings
      * @throws \InvalidArgumentException If the data is inaccurate/incorrect.
      * @return boolean True if validated, false if not
      */
-    final protected function validateInt(string $name, $value, array $allowed) : bool
+    final protected function validateInt(string $name, $value, array $allowed): bool
     {
-        if (true === in_array('int', $allowed)) {
-            if (true === is_int($value)) {
-                if ($value >= 0) {
-                    return true;
-                } else {
-                    throw new \InvalidArgumentException('Int value for '.$name.' is too low');
-                }
+        if (is_int($value) && in_array('int', $allowed)) {
+            if ($value >= 0) {
+                return true;
             }
+
+            throw new \InvalidArgumentException('Int value for '.$name.' is too low');
         }
 
         return false;
@@ -142,22 +121,20 @@ class ValidateSettings
      * @throws \InvalidArgumentException If the data is inaccurate/incorrect.
      * @return boolean True if validated, false if not
      */
-    final protected function validateArray(string $name, $value, array $allowed) : bool
+    final protected function validateArray(string $name, $value, array $allowed): bool
     {
-        if (true === in_array('array', $allowed)) {
-            if (true === is_array($value)) {
-                if (true === empty($value)) {
-                    throw new \InvalidArgumentException('Array for '.$name.' is empty');
-                } else {
-                    foreach ($value as $line) {
-                        if (false === is_string($line)) {
-                            throw new \InvalidArgumentException('Array for '.$name.' contains a non-string item');
-                        }
-                    }
+        if (is_array($value) && in_array('array', $allowed)) {
+            if (empty($value)) {
+                throw new \InvalidArgumentException('Array for '.$name.' is empty');
+            }
 
-                    return true;
+            foreach ($value as $line) {
+                if (!is_string($line)) {
+                    throw new \InvalidArgumentException('Array for '.$name.' contains a non-string item');
                 }
             }
+
+            return true;
         }
 
         return false;

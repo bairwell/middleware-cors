@@ -19,5 +19,4 @@ namespace Bairwell\MiddlewareCors\Exceptions;
 class NoMethod extends ExceptionAbstract
 {
 
-
 }//end class

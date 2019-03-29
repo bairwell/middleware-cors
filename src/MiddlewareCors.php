@@ -17,6 +17,7 @@
 
 namespace Bairwell;
 
+use Bairwell\MiddlewareCors\Traits\Parse;
 use Bairwell\MiddlewareCors\ValidateSettings;
 use Bairwell\MiddlewareCors\Preflight;
 use Psr\Http\Message\ResponseInterface;
@@ -59,8 +60,7 @@ use Psr\Log\LoggerInterface;
  */
 class MiddlewareCors
 {
-
-    use \Bairwell\MiddlewareCors\Traits\Parse;
+    use Parse;
 
     /**
      * The settings configuration.
@@ -135,9 +135,9 @@ class MiddlewareCors
      *
      * @return boolean True if logged, false if no logger.
      */
-    public function addLog(string $string, array $logData = []) : bool
+    public function addLog(string $string, array $logData = []): bool
     {
-        if (null !== $this->logger) {
+        if ($this->logger !== null) {
             $this->logger->debug('CORs: '.$string, $logData);
             return true;
         }
@@ -151,7 +151,7 @@ class MiddlewareCors
      *
      * @return array
      */
-    public function getDefaults() : array
+    public function getDefaults(): array
     {
         // our default settings
         $return = [
@@ -171,7 +171,7 @@ class MiddlewareCors
      *
      * @return array
      */
-    public function getSettings() : array
+    public function getSettings(): array
     {
         return $this->settings;
     }//end getSettings()
@@ -183,7 +183,7 @@ class MiddlewareCors
      *
      * @return self
      */
-    public function setSettings(array $settings = []) : self
+    public function setSettings(array $settings = []): self
     {
         $this->settings = array_merge($this->settings, $settings);
         // loop through checking each setting
@@ -199,7 +199,7 @@ class MiddlewareCors
      *
      * @return array
      */
-    public function getAllowedSettings() : array
+    public function getAllowedSettings(): array
     {
         return $this->allowedSettings;
     }//end getAllowedSettings()
@@ -210,22 +210,27 @@ class MiddlewareCors
      * The __invoke call is used to allow this class to be called as a function.
      * PSR7 middleware should work like this.
      *
-     * @param ServerRequestInterface $request  PSR7 request object.
-     * @param ResponseInterface      $response PSR7 response object.
-     * @param callable               $next     Next middleware callable.
+     * @param ServerRequestInterface $request PSR7 request object.
+     * @param ResponseInterface $response PSR7 response object.
+     * @param callable $next Next middleware callable.
+     *
+     * @return ResponseInterface PSR7 response object
      *
      * @throws BadOrigin If the Origin is not set correctly.
-     * @return ResponseInterface PSR7 response object
+     * @throws MiddlewareCors\Exceptions\HeaderNotAllowed
+     * @throws MiddlewareCors\Exceptions\MethodNotAllowed
+     * @throws MiddlewareCors\Exceptions\NoHeadersAllowed
+     * @throws MiddlewareCors\Exceptions\NoMethod
      */
     public function __invoke(
         ServerRequestInterface $request,
         ResponseInterface $response,
         callable $next
-    ) : ResponseInterface
+    ): ResponseInterface
     {
         // if there is no origin header set, then this isn't a CORs related
         // call and we should therefore return.
-        if ('' === $request->getHeaderLine('origin')) {
+        if ($request->getHeaderLine('origin') === '') {
             $this->addLog('Request does not have an origin setting');
             // return the next bit of middleware
             $next = $next($request, $response);
@@ -234,28 +239,34 @@ class MiddlewareCors
         }
 
         $this->addLog('Request has an origin setting and is being treated like a CORs request');
+
         // All CORs related requests should have the origin field
         // and the credentials field returned (if they are applicable).
         // All other fields are "request specific" (either preflight or not).
         // set the Access-Control-Allow-Origin header. Uses origin configuration setting.
         $allowedOrigins = [];
+
         $origin = $this->parseOrigin($request, $allowedOrigins);
         // check the origin is one of the allowed ones.
-        if ('' === $origin) {
+        if ($origin === '') {
             $exception = new BadOrigin('Bad Origin');
             $exception->setSent($request->getHeaderLine('origin'));
             $exception->setAllowed($allowedOrigins);
+
             throw $exception;
         }
 
         $this->addLog('Processing with origin of "'.$origin.'"');
         $headers = [];
         $headers['Access-Control-Allow-Origin'] = $origin;
+
         // sets the Access-Control-Allow-Credentials header if allowCredentials configuration setting is true.
         $allow = $this->parseAllowCredentials($request);
+
         // if allowCredentials isn't exactly true, we won't allow the header to be set
-        if (true === $allow) {
+        if ($allow === true) {
             $this->addLog('Adding Access-Control-Allow-Credentials header');
+
             // set the header if true, omit if not
             $headers['Access-Control-Allow-Credentials'] = 'true';
         }
@@ -263,18 +274,20 @@ class MiddlewareCors
         // http://www.html5rocks.com/static/images/cors_server_flowchart.png
         // An "OPTIONS" request is a "Preflight" request and we should
         // add all our appropriate headers.
-        if ('OPTIONS' === strtoupper($request->getMethod())) {
+        if (strtoupper($request->getMethod()) === 'OPTIONS') {
             $this->addLog('Preflighting');
             $return = $this->preflight->__invoke($this->settings, $request, $response, $headers, $origin);
             $this->addLog('Returning from preflight');
+
             return $return;
         }
 
         // if it was a non-OPTIONs request, just
         // set the Access-Control-Expose-Headers header. Uses exposeHeaders configuration setting
         $exposeHeaders = $this->parseItem('exposeHeaders', $request, false);
+
         // this header should only be set if there is an appropriate configuration setting
-        if ('' !== $exposeHeaders) {
+        if ($exposeHeaders !== '') {
             $this->addLog('Adding Access-Control-Expose-Header header');
             $headers['Access-Control-Expose-Headers'] = $exposeHeaders;
         }

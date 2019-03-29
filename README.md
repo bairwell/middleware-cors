@@ -37,7 +37,7 @@ or by modifying your `composer.json` file:
 ````
 {
     "require": {
-        "bairwell/middleware-cors" : "@stable"
+        "bairwell/middleware-cors": "@stable"
     }
 }
 ````
@@ -94,7 +94,7 @@ allowed per route, see ``tests/MiddlewareCors/FunctionalTests/SlimTest.php``
 ## Suggested settings
 ```php
 // read the allowed methods for a route
- $corsAllowedMethods = function (ServerRequestInterface $request) use ($container) : array {
+ $corsAllowedMethods = function (ServerRequestInterface $request) use ($container): array {
 
             // if this closure is called, make sure it has the route available in the container.
             /* @var RouterInterface $router */

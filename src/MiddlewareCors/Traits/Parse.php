@@ -30,7 +30,7 @@ trait Parse
      *
      * @return boolean True if logged, false if no logger.
      */
-    abstract protected function addLog(string $string) : bool;
+    abstract protected function addLog(string $string): bool;
 
     /**
      * Parse an item from string/int/callable/array to an expected value.
@@ -43,43 +43,44 @@ trait Parse
      * @throws \InvalidArgumentException If the item is invalid.
      * @return string
      */
-    protected function parseItem(string $itemName, ServerRequestInterface $request, bool $isSingle = false) : string
+    protected function parseItem(string $itemName, ServerRequestInterface $request, bool $isSingle = false): string
     {
         $item = $this->settings[$itemName];
+
         // we allow callables to be set (along with strings) so we can vary things upon requests.
-        if (true === is_callable($item)) {
+        if (is_callable($item)) {
             // all callbacks are made with the request as the second parameter.
             $item = call_user_func($item, $request);
         }
 
         // if it is a boolean, we may as well return.
-        if (false === $item || null === $item) {
+        if ($item === false || $item === null) {
             return '';
-        } elseif (true === $item) {
+        } elseif ($item === true) {
             throw new \InvalidArgumentException('Cannot have true as a setting for '.$itemName);
         }
 
         // if it is a string, convert it into an array based on position of commas - but trim excess white spaces.
-        if (true === is_string($item)) {
+        if (is_string($item)) {
             $item = array_map('trim', explode(',', (string) $item));
         }
 
         // are we expecting a single item to be returned?
-        if (true === $isSingle) {
+        if ($isSingle) {
             // if we are, and it is an int, return it as a string for type casting
-            if (true === is_int($item)) {
+            if (is_int($item)) {
                 return (string) $item;
             } elseif (count($item) === 1) {
                 // if we have a single item, return it.
                 return (string) $item[0];
-            } else {
-                throw new \InvalidArgumentException('Only expected a single string, int or bool');
             }
+
+            throw new \InvalidArgumentException('Only expected a single string, int or bool');
         }
 
         // we always want to work on arrays
         // explode the string and trim it.
-        if (false === is_array($item)) {
+        if (!is_array($item)) {
             $item = array_map('trim', explode(',', (string) $item));
         }
 
@@ -98,18 +99,19 @@ trait Parse
      * @throws \InvalidArgumentException If the item is missing from settings or is invalid.
      * @return boolean
      */
-    protected function parseAllowCredentials(ServerRequestInterface $request) : bool
+    protected function parseAllowCredentials(ServerRequestInterface $request): bool
     {
         // read in the current setting
         $item = $this->settings['allowCredentials'];
+
         // we allow callables to be set (along with strings) so we can vary things upon requests.
-        if (true === is_callable($item)) {
+        if (is_callable($item)) {
             // all callbacks are made with the request as the second parameter.
             $item = call_user_func($item, $request);
         }
 
         // if the credentials are still not a boolean, abort.
-        if (false === is_bool($item)) {
+        if (!is_bool($item)) {
             throw new \InvalidArgumentException('allowCredentials should be a boolean value');
         }
 
@@ -125,17 +127,18 @@ trait Parse
      * @throws \InvalidArgumentException If the item is missing from settings or is invalid.
      * @return integer
      */
-    protected function parseMaxAge(ServerRequestInterface $request) : int
+    protected function parseMaxAge(ServerRequestInterface $request): int
     {
         $item = $this->settings['maxAge'];
+
         // we allow callables to be set (along with strings) so we can vary things upon requests.
-        if (true === is_callable($item)) {
+        if (is_callable($item)) {
             // all callbacks are made with the request as the second parameter.
             $item = call_user_func($item, $request);
         }
 
         // maxAge needs to be an int - if it isn't, throw an exception.
-        if (false === is_int($item)) {
+        if (!is_int($item)) {
             throw new \InvalidArgumentException('maxAge should be an int value');
         }
 
@@ -157,35 +160,40 @@ trait Parse
      *
      * @return string
      */
-    protected function parseOrigin(ServerRequestInterface $request, array &$allowedOrigins = []) : string
+    protected function parseOrigin(ServerRequestInterface $request, array &$allowedOrigins = []): string
     {
         // read the client provided origin header
         $origin = $request->getHeaderLine('origin');
+
         // if it isn't a string or is empty, the return as we will not have a matching
         // origin setting.
-        if (false === is_string($origin) || '' === $origin) {
+        if (!is_string($origin) || $origin === '') {
             $this->addLog('Origin is empty or is not a string');
+
             return '';
         }
 
         $this->addLog('Processing origin of "'.$origin.'"');
+
         // lowercase the user provided origin for comparison purposes.
         $origin = strtolower($origin);
         $parsed = parse_url($origin);
         $originHost = $origin;
-        if (true === is_array($parsed)) {
-            if (true === isset($parsed['host'])) {
+
+        if (is_array($parsed)) {
+            if (isset($parsed['host'])) {
                 $this->addLog('Parsed a hostname from origin: '.$parsed['host']);
                 $originHost = $parsed['host'];
             }
         } else {
             $parsed = [];
         }
+
         // read the current origin setting
         $originSetting = $this->settings['origin'];
 
         // see if this is a callback
-        if (true === is_callable($originSetting)) {
+        if (is_callable($originSetting)) {
             // all callbacks are made with the request as the second parameter.
             $this->addLog('Origin server request is being passed to callback');
             $originSetting = call_user_func($originSetting, $request);
@@ -193,19 +201,23 @@ trait Parse
 
         // set a dummy "matched with" setting
         $matched = '';
+
         // if it is an array (either set via configuration or returned via the call
         // back), look through them.
-        if (true === is_array($originSetting)) {
+        if (is_array($originSetting)) {
             $this->addLog('Iterating through Origin array');
             foreach ($originSetting as $item) {
                 $allowedOrigins[] = $item;
+
                 // see if the origin matches (the parseOriginMatch function supports
                 // wildcards)
                 $matched = $this->parseOriginMatch($item, $originHost);
+
                 // if anything else but '' was returned, then we have a valid match.
-                if ('' !== $matched) {
+                if ($matched !== '') {
                     $this->addLog('Iterator found a matched origin of '.$matched);
                     $matched = $this->addProtocolPortIfNeeded($matched, $parsed);
+
                     return $matched;
                 }
             }
@@ -213,7 +225,7 @@ trait Parse
 
         // if we've got this far, than nothing so far has matched, our last attempt
         // is to try to match it as a string (if applicable)
-        if ('' === $matched && true === is_string($originSetting)) {
+        if ($matched === '' && is_string($originSetting)) {
             $this->addLog('Attempting to match origin as string');
             $allowedOrigins[] = $originSetting;
             $matched = $this->parseOriginMatch($originSetting, $originHost);
@@ -221,6 +233,7 @@ trait Parse
 
         // return the matched setting (may be '' to indicate nothing matched)
         $matched = $this->addProtocolPortIfNeeded($matched, $parsed);
+
         return $matched;
     }//end parseOrigin()
 
@@ -232,29 +245,32 @@ trait Parse
      *
      * @return string
      */
-    protected function addProtocolPortIfNeeded(string $matched, array $parsed) : string
+    protected function addProtocolPortIfNeeded(string $matched, array $parsed): string
     {
-        if ('' === $matched || '*' === $matched) {
+        if ($matched === '' || $matched === '*') {
             $return = $matched;
 
             return $return;
         }
+
         $protocol = 'https://';
         $port = 0;
-        if (true === isset($parsed['scheme'])) {
+
+        if (isset($parsed['scheme'])) {
             $this->addLog('Parsed a protocol from origin: '.$parsed['scheme']);
             $protocol = $parsed['scheme'].'://';
         } else {
             $this->addLog('Unable to parse protocol/scheme from origin');
         }
-        if (true === isset($parsed['port'])) {
+
+        if (isset($parsed['port'])) {
             $this->addLog('Parsed a port from origin: '.$parsed['port']);
             $port = (int) $parsed['port'];
         } else {
             $this->addLog('Unable to parse port from origin');
         }
 
-        if (0 === $port) {
+        if ($port === 0) {
             if ('https://' === $protocol) {
                 $port = 443;
             } else {
@@ -267,6 +283,7 @@ trait Parse
         } else {
             $return = $protocol.$matched.':'.$port;
         }
+
         return $return;
     }//end addProtocolPortIfNeeded()
 
@@ -281,35 +298,38 @@ trait Parse
     protected function parseOriginMatch(string $item, string $origin) :string
     {
         $this->addLog('Checking configuration origin of "'.$item.'" against user "'.$origin.'"');
-        if ('' === $item || '*' === $item) {
+
+        if ($item === '' || $item === '*') {
             $this->addLog('Origin is either an empty string or wildcarded star. Returning '.$item);
+
             return $item;
         }
 
         // host names are case insensitive, so lower case it.
         $item = strtolower($item);
         // if the item does NOT contain a star, make a straight comparison
-        if (false === strpos($item, '*')) {
-            if ($item === $origin) {
-                // if we have a match, then return.
-                $this->addLog('Origin is an exact case insensitive match');
-                return $origin;
-            }
-        } else {
-            // item contains one or more stars/wildcards
-            // ensure we have no preg characters in the item
-            $quoted = preg_quote($item, '/');
-            // replace the preg_quote escaped star with .*
-            $quoted = str_replace('\*', '.*', $quoted);
-            // see if we have a preg_match, and, if we do, return it.
-            if (1 === preg_match('/^'.$quoted.'$/', $origin)) {
-                $this->addLog('Wildcarded origin match with '.$origin);
-                return $origin;
-            }
+        if (strpos($item, '*') === false && $item === $origin) {
+            // if we have a match, then return.
+            $this->addLog('Origin is an exact case insensitive match');
+
+            return $origin;
+        }
+
+        // item contains one or more stars/wildcards
+        // ensure we have no preg characters in the item
+        $quoted = preg_quote($item, '/');
+        // replace the preg_quote escaped star with .*
+        $quoted = str_replace('\*', '.*', $quoted);
+        // see if we have a preg_match, and, if we do, return it.
+        if (preg_match('/^'.$quoted.'$/', $origin) === 1) {
+            $this->addLog('Wildcarded origin match with '.$origin);
+
+            return $origin;
         }
 
         // if nothing is matched, then return an empty string.
         $this->addLog('Unable to match "'.$item.'" against user "'.$origin.'"');
+
         return '';
     }//end parseOriginMatch()
 }
