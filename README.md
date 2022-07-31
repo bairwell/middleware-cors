@@ -7,7 +7,7 @@
 [![Build Status](https://travis-ci.org/bairwell/middleware-cors.svg?branch=master)](https://travis-ci.org/bairwell/middleware-cors)
 [![Total Downloads](https://poser.pugx.org/bairwell/middleware-cors/downloads)](https://packagist.org/packages/bairwell/middleware-cors)
 
-This is a PHP 7 [Composer](https://getcomposer.org/) compatible library for providing a [PSR-7]((http://www.php-fig.org/psr/psr-7/) compatible middleware layer for handling
+This is a PHP 7 [Composer](https://getcomposer.org/) compatible library for providing a [PSR-7](http://www.php-fig.org/psr/psr-7/) compatible middleware layer for handling
 "[CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/Access_control_CORS)" (Cross Origin Request Security/Cross-Origin Http Request/HTTP access control) headers and security.
 
 ## What does this library provides over other CORs libraries?
