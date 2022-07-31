@@ -2,4 +2,5 @@
 /phpunit.xml
 /vendor/
 /build
+/.idea
 composer.lock

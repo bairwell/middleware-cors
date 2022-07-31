@@ -134,7 +134,7 @@ class MiddlewareCors
      * @param string $string  String to log.
      * @param array  $logData Additional data to log.
      *
-     * @return bool True if logged, false if no logger.
+     * @return boolean True if logged, false if no logger.
      */
     public function addLog(string $string, array $logData = []) : bool
     {

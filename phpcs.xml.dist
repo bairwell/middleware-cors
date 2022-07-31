@@ -43,6 +43,8 @@
         <exclude name="MySource.Channels.IncludeSystem.NotIncludedCall"/>
     </rule>
     <rule ref="Generic">
+        <!-- This goes against PSR-2 -->
+        <exclude name="Generic.Classes.OpeningBraceSameLine.BraceOnNewLine"/>
         <!--- we want spaces not tabs -->
         <exclude name="Generic.WhiteSpace.DisallowSpaceIndent.SpacesUsed"/>
         <!-- we want to use the allman braces style -->
