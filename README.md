@@ -126,7 +126,7 @@ $corsAllowedMethods = function (ServerRequestInterface $request) use ($container
     }
 
     // if we have methods, let's list them removing the OPTIONs one.
-    if (0 === count($methods)) {
+    if (0 !== count($methods)) {
         // find the OPTIONs method
         $key = array_search('OPTIONS', $methods,true);
         // and remove it if set.
